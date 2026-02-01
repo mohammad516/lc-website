@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 
 interface Snowflake {
-    id: number;
     left: number;
     baseY: number;
     size: number;
@@ -14,97 +14,108 @@ interface Snowflake {
 }
 
 export default function ShopNow() {
+    // Use state for rendering snowflakes
     const [snowflakes, setSnowflakes] = useState<Snowflake[]>([]);
-    const scrollRef = useRef(0);
+
+    // Refs for animation performance
+    const flakeElsRef = useRef<(HTMLSpanElement | null)[]>([]);
+    const scrollYRef = useRef(0);
     const rafRef = useRef<number | null>(null);
 
-    // Initialize snowflakes
+    // Initialize snowflakes once on mount
     useEffect(() => {
-        const flakes: Snowflake[] = Array.from({ length: 18 }).map((_, i) => {
+        const flakes = Array.from({ length: 18 }).map(() => {
             const depth = Math.random(); // 0 (far) → 1 (near)
-
             return {
-                id: i,
                 left: Math.random() * 100,
-                baseY: Math.random() * 400,
-                size: 6 + depth * 16,
+                baseY: Math.random() * 700, // Fill larger height initially
+                size: 16 + depth * 20,
                 speed: 0.15 + depth * 0.6,
                 drift: Math.random() * 40 - 20,
-                opacity: 0.3 + depth * 0.5,
+                opacity: 0.6 + depth * 0.35,
             };
         });
-
         setSnowflakes(flakes);
     }, []);
 
-    // Scroll listener (no re-render)
+    // Track scroll position
     useEffect(() => {
         const onScroll = () => {
-            scrollRef.current = window.scrollY;
+            scrollYRef.current = window.scrollY;
         };
-
         window.addEventListener("scroll", onScroll, { passive: true });
         return () => window.removeEventListener("scroll", onScroll);
     }, []);
 
-    // Force smooth animation updates
-    const [, forceRender] = useState(0);
+    // Animation Loop
     useEffect(() => {
-        const loop = () => {
-            forceRender((v) => v + 1);
-            rafRef.current = requestAnimationFrame(loop);
+        if (snowflakes.length === 0) return;
+
+        const animate = () => {
+            flakeElsRef.current.forEach((el, i) => {
+                const flake = snowflakes[i];
+                if (!el || !flake) return;
+
+                // Modulo arithmetic to loop snow within container
+                const y = (flake.baseY + scrollYRef.current * flake.speed) % 700;
+
+                el.style.transform = `translate(${flake.drift}px, ${y}px)`;
+            });
+            rafRef.current = requestAnimationFrame(animate);
         };
-        rafRef.current = requestAnimationFrame(loop);
+
+        rafRef.current = requestAnimationFrame(animate);
         return () => {
             if (rafRef.current) cancelAnimationFrame(rafRef.current);
         };
-    }, []);
+    }, [snowflakes]);
 
     return (
-        <section className="relative w-full h-[500px] md:h-[600px] overflow-hidden flex items-center justify-center">
-            {/* Background */}
-            <div
-                className="absolute inset-0 bg-cover bg-center"
-                style={{ backgroundImage: "url('/shopnow.png')" }}
-            />
+        <section className="relative w-full h-[500px] md:h-[600px] overflow-hidden">
+            {/* Background Image */}
+            <div className="absolute inset-0">
+                <Image
+                    src="/shopnow.png"
+                    alt="Shop Now"
+                    fill
+                    priority
+                    className="object-cover"
+                />
+            </div>
 
             {/* Snow layer */}
             <div className="absolute inset-0 z-10 pointer-events-none">
-                {snowflakes.map((flake) => {
-                    const y =
-                        (flake.baseY + scrollRef.current * flake.speed) % 700;
-
-                    return (
-                        <span
-                            key={flake.id}
-                            className="absolute text-white select-none"
-                            style={{
-                                left: `${flake.left}%`,
-                                transform: `translate(${flake.drift}px, ${y}px)`,
-                                fontSize: flake.size,
-                                opacity: flake.opacity,
-                                transition: "transform 0.15s linear",
-                            }}
-                        >
-                            ❄
-                        </span>
-                    );
-                })}
+                {snowflakes.map((flake, i) => (
+                    <span
+                        key={i}
+                        ref={(el) => {
+                            flakeElsRef.current[i] = el;
+                        }}
+                        className="absolute text-white select-none"
+                        style={{
+                            left: `${flake.left}%`,
+                            fontSize: flake.size,
+                            opacity: flake.opacity,
+                            willChange: "transform",
+                        }}
+                    >
+                        ❄
+                    </span>
+                ))}
             </div>
 
-            {/* Content */}
-            <div className="relative z-20 flex flex-col items-center justify-center text-center px-4">
-                <h2 className="text-white text-xl sm:text-2xl md:text-5xl font-medium md:font-normal mb-24 md:mb-12 whitespace-nowrap tracking-wide drop-shadow-md">
-                    Let it grow, let it grow, let it grow!
-                </h2>
+            {/* Headline - Upper Middle */}
+            <h2 className="absolute z-20 top-[35%] left-1/2 -translate-x-1/2 -translate-y-1/2 text-white text-xl sm:text-2xl md:text-4xl font-medium tracking-wide whitespace-nowrap drop-shadow-md">
+                Let it grow, let it grow, let it grow!
+            </h2>
 
-                <Link
-                    href="/shop"
-                    className="bg-[#9F8AB2] hover:bg-[#8A72A1] text-white text-lg font-medium px-10 py-3 rounded-full shadow-lg transition-transform duration-300 hover:scale-105"
-                >
-                    Shop Now!
-                </Link>
-            </div>
+            {/* Button - Lower Position */}
+            <Link
+                href="/shop"
+                className="absolute z-20 bottom-[18%] left-1/2 -translate-x-1/2 bg-[#9F8AB2] hover:bg-[#8A72A1] text-white text-base md:text-lg font-medium px-8 md:px-10 py-3 rounded-full shadow-lg transition-transform duration-300 hover:scale-105"
+            >
+                Shop Now!
+            </Link>
         </section>
     );
 }
