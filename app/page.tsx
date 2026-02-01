@@ -3,6 +3,7 @@ import Hero from "@/components/Hero";
 import FeaturedProducts from "@/components/FeaturedProducts";
 import Categories from "@/components/Categories";
 import Footer from "@/components/Footer";
+import ShopNow from "@/components/ShopNow";
 
 export default function Home() {
   return (
@@ -11,6 +12,7 @@ export default function Home() {
       <main className="flex-1">
         <Hero />
         <FeaturedProducts />
+        <ShopNow />
         <Categories />
       </main>
       <Footer />
