@@ -1,121 +1,118 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
 interface Snowflake {
-    left: number;
-    baseY: number;
-    size: number;
-    speed: number;
-    drift: number;
-    opacity: number;
+  left: number;
+  baseY: number;
+  size: number;
+  speed: number;
+  drift: number;
+  opacity: number;
 }
 
 export default function ShopNow() {
-    // Use state for rendering snowflakes
-    const [snowflakes, setSnowflakes] = useState<Snowflake[]>([]);
+  const snowflakesRef = useRef<Snowflake[]>([]);
+  const flakeElsRef = useRef<HTMLSpanElement[]>([]);
+  const scrollYRef = useRef(0);
+  const rafRef = useRef<number | null>(null);
 
-    // Refs for animation performance
-    const flakeElsRef = useRef<(HTMLSpanElement | null)[]>([]);
-    const scrollYRef = useRef(0);
-    const rafRef = useRef<number | null>(null);
+  // Initialize snowflakes once
+  useEffect(() => {
+    snowflakesRef.current = Array.from({ length: 18 }).map(() => {
+      const depth = Math.random(); // 0 (far) → 1 (near)
 
-    // Initialize snowflakes once on mount
-    useEffect(() => {
-        const flakes = Array.from({ length: 18 }).map(() => {
-            const depth = Math.random(); // 0 (far) → 1 (near)
-            return {
-                left: Math.random() * 100,
-                baseY: Math.random() * 700, // Fill larger height initially
-                size: 16 + depth * 20,
-                speed: 0.15 + depth * 0.6,
-                drift: Math.random() * 40 - 20,
-                opacity: 0.6 + depth * 0.35,
-            };
-        });
-        setSnowflakes(flakes);
-    }, []);
+      return {
+        left: Math.random() * 100,
+        baseY: Math.random() * 400,
+        size: 6 + depth * 16,
+        speed: 0.15 + depth * 0.6,
+        drift: Math.random() * 40 - 20,
+        opacity: 0.3 + depth * 0.5,
+      };
+    });
+  }, []);
 
-    // Track scroll position
-    useEffect(() => {
-        const onScroll = () => {
-            scrollYRef.current = window.scrollY;
-        };
-        window.addEventListener("scroll", onScroll, { passive: true });
-        return () => window.removeEventListener("scroll", onScroll);
-    }, []);
+  // Track scroll position (no re-render)
+  useEffect(() => {
+    const onScroll = () => {
+      scrollYRef.current = window.scrollY;
+    };
 
-    // Animation Loop
-    useEffect(() => {
-        if (snowflakes.length === 0) return;
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
-        const animate = () => {
-            flakeElsRef.current.forEach((el, i) => {
-                const flake = snowflakes[i];
-                if (!el || !flake) return;
+  // Animate snowflakes (DOM only)
+  useEffect(() => {
+    const animate = () => {
+      flakeElsRef.current.forEach((el, i) => {
+        const flake = snowflakesRef.current[i];
+        if (!el || !flake) return;
 
-                // Modulo arithmetic to loop snow within container
-                const y = (flake.baseY + scrollYRef.current * flake.speed) % 700;
+        const y = flake.baseY + scrollYRef.current * flake.speed;
 
-                el.style.transform = `translate(${flake.drift}px, ${y}px)`;
-            });
-            rafRef.current = requestAnimationFrame(animate);
-        };
+        el.style.transform = `translate(${flake.drift}px, ${y}px)`;
+      });
 
-        rafRef.current = requestAnimationFrame(animate);
-        return () => {
-            if (rafRef.current) cancelAnimationFrame(rafRef.current);
-        };
-    }, [snowflakes]);
+      rafRef.current = requestAnimationFrame(animate);
+    };
 
-    return (
-        <section className="relative w-full h-[500px] md:h-[600px] overflow-hidden">
-            {/* Background Image */}
-            <div className="absolute inset-0">
-                <Image
-                    src="/shopnow.png"
-                    alt="Shop Now"
-                    fill
-                    priority
-                    className="object-cover"
-                />
-            </div>
+    rafRef.current = requestAnimationFrame(animate);
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
+  }, []);
 
-            {/* Snow layer */}
-            <div className="absolute inset-0 z-10 pointer-events-none">
-                {snowflakes.map((flake, i) => (
-                    <span
-                        key={i}
-                        ref={(el) => {
-                            flakeElsRef.current[i] = el;
-                        }}
-                        className="absolute text-white select-none"
-                        style={{
-                            left: `${flake.left}%`,
-                            fontSize: flake.size,
-                            opacity: flake.opacity,
-                            willChange: "transform",
-                        }}
-                    >
-                        ❄
-                    </span>
-                ))}
-            </div>
+  return (
+    <section className="relative w-full h-[500px] md:h-[600px] overflow-hidden flex items-center justify-center">
+      {/* Background Image (safe for deploy) */}
+      <div className="absolute inset-0">
+        <Image
+          src="/shopnow.png"
+          alt="Shop Now"
+          fill
+          priority
+          className="object-cover"
+        />
+      </div>
 
-            {/* Headline - Upper Middle */}
-            <h2 className="absolute z-20 top-[35%] left-1/2 -translate-x-1/2 -translate-y-1/2 text-white text-xl sm:text-2xl md:text-4xl font-medium tracking-wide whitespace-nowrap drop-shadow-md">
-                Let it grow, let it grow, let it grow!
-            </h2>
+      {/* Snow layer */}
+      <div className="absolute inset-0 z-10 pointer-events-none">
+        {snowflakesRef.current.map((flake, i) => (
+          <span
+            key={i}
+            ref={(el) => {
+              if (el) flakeElsRef.current[i] = el;
+            }}
+            className="absolute text-white select-none"
+            style={{
+              left: `${flake.left}%`,
+              fontSize: flake.size,
+              opacity: flake.opacity,
+              willChange: "transform",
+            }}
+          >
+            ❄
+          </span>
+        ))}
+      </div>
 
-            {/* Button - Lower Position */}
-            <Link
-                href="/shop"
-                className="absolute z-20 bottom-[18%] left-1/2 -translate-x-1/2 bg-[#9F8AB2] hover:bg-[#8A72A1] text-white text-base md:text-lg font-medium px-8 md:px-10 py-3 rounded-full shadow-lg transition-transform duration-300 hover:scale-105"
-            >
-                Shop Now!
-            </Link>
-        </section>
-    );
+      {/* Content */}
+      <div className="relative z-20 flex flex-col items-center text-center px-4 gap-10">
+        <h2 className="text-white text-xl sm:text-2xl md:text-4xl font-medium tracking-wide whitespace-nowrap drop-shadow-md">
+          Let it grow, let it grow, let it grow!
+        </h2>
+
+        <Link
+          href="/shop"
+          className="bg-[#9F8AB2] hover:bg-[#8A72A1] text-white text-lg font-medium px-10 py-3 rounded-full shadow-lg transition-transform duration-300 hover:scale-105"
+        >
+          Shop Now!
+        </Link>
+      </div>
+    </section>
+  );
 }
