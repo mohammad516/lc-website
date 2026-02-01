@@ -1,33 +1,54 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+import MetaPixel from "@/app/components/MetaPixel";
+import { CartProvider } from "@/contexts/CartContext";
+import LoadingScreen from "@/components/LoadingScreen";
+
+import { Inter, Playfair_Display, Dancing_Script } from "next/font/google";
+
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const playfairDisplay = Playfair_Display({
+  variable: "--font-playfair",
   subsets: ["latin"],
+  display: "swap",
+});
+
+const dancingScript = Dancing_Script({
+  variable: "--font-dancing-script",
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["400", "600", "700"],
 });
 
 export const metadata: Metadata = {
-  title: "LC Organic ",
+  title: "LC Organic Skin Care",
   description: "LC Organic Skin Care",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${inter.variable} ${playfairDisplay.variable} ${dancingScript.variable} antialiased`}
       >
-        {children}
+        {/* Meta Pixel must be inside body */}
+        <MetaPixel />
+
+        <LoadingScreen />
+
+        <CartProvider>
+          {children}
+        </CartProvider>
       </body>
     </html>
   );
