@@ -71,7 +71,7 @@ export default function ShopNow() {
       {/* Background Image (safe for deploy) */}
       <div className="absolute inset-0">
         <Image
-          src="/shopnow.png"
+          src="/sho.png"
           alt="Shop Now"
           fill
           priority
