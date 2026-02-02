@@ -272,13 +272,9 @@ export default function Hero() {
           >
             <motion.span
               className="block text-white"
-              animate={{
-                color: ["#FFFFFF", "#E0B0FF", "#FFFFFF"],
-              }}
-              transition={{
-                duration: 3,
-                repeat: Infinity,
-                ease: "easeInOut"
+              style={{
+                fontFamily: "var(--font-lora), serif",
+                fontWeight: 700,
               }}
             >
               LC ORGANIC

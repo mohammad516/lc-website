@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
-import MetaPixel from "@/app/components/MetaPixel";
+// import MetaPixel from "@/app/components/MetaPixel";
 import { CartProvider } from "@/contexts/CartContext";
 import LoadingScreen from "@/components/LoadingScreen";
 
-import { Inter, Playfair_Display, Dancing_Script } from "next/font/google";
+import { Inter, Playfair_Display, Dancing_Script, Lora } from "next/font/google";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -26,6 +26,13 @@ const dancingScript = Dancing_Script({
   weight: ["400", "600", "700"],
 });
 
+const lora = Lora({
+  variable: "--font-lora",
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["400", "700"],
+});
+
 export const metadata: Metadata = {
   title: "LC Organic Skin Care",
   description: "LC Organic Skin Care",
@@ -39,10 +46,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${inter.variable} ${playfairDisplay.variable} ${dancingScript.variable} antialiased`}
+        className={`${inter.variable} ${playfairDisplay.variable} ${dancingScript.variable} ${lora.variable} antialiased`}
       >
         {/* Meta Pixel must be inside body */}
-        <MetaPixel />
+        {/* <MetaPixel /> */}
 
         <LoadingScreen />
 

@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { Lock } from "lucide-react";
+import { Lock, Plus, Minus, Trash2, ShoppingBag } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useCart } from "@/contexts/CartContext";
@@ -33,87 +33,94 @@ export default function CartPage() {
     <div className="min-h-screen flex flex-col bg-white">
       <Navbar />
       <main className="flex-1 pt-24 md:pt-28 lg:pt-32 pb-24 md:pb-12">
-        <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
           {/* Page Title */}
-          <h1 className="mb-12 text-center font-serif text-4xl font-normal tracking-wide text-neutral-900 md:text-5xl lg:text-6xl">
-            Cart
+          <h1 className="mb-12 text-center font-serif text-4xl font-normal tracking-wide text-[#5B3A82] md:text-5xl lg:text-6xl" style={{ fontFamily: 'var(--font-lora), serif' }}>
+            Shopping Cart
           </h1>
 
           {cartItems.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-20">
-              <p className="mb-6 text-lg text-neutral-600">
-                Your cart is empty
+            <div className="flex flex-col items-center justify-center py-20 text-[#5B3A82]">
+              <div className="h-24 w-24 rounded-full bg-neutral-50 flex items-center justify-center mb-6">
+                <ShoppingBag size={48} className="text-neutral-300" />
+              </div>
+              <p className="mb-8 text-lg text-neutral-500 font-light">
+                Your cart is currently empty.
               </p>
               <Link
                 href="/"
-                className="rounded-lg border-2 border-neutral-900 bg-neutral-900 px-6 py-3 text-sm font-medium uppercase tracking-wide text-white transition-all hover:bg-neutral-800"
+                className="rounded-full bg-[#483063] px-10 py-4 text-sm font-medium tracking-wide text-white transition-all hover:bg-[#5B3A82] shadow-lg"
               >
-                Continue Shopping
+                Start Shopping
               </Link>
             </div>
           ) : (
-            <>
-              {/* Cart Items - Mobile Layout */}
-              <div className="space-y-6 md:hidden">
+            <div className="space-y-8">
+              {/* Cart Items */}
+              <div className="space-y-6">
                 {cartItems.map((item) => (
                   <div
                     key={item.id}
-                    className="border-b border-neutral-200 pb-6 last:border-b-0"
+                    className="group relative flex gap-4 sm:gap-6 border-b border-neutral-100 pb-8 last:border-b-0"
                   >
-                    <div className="flex gap-4">
-                      {/* Product Image */}
-                      <div className="relative h-24 w-24 flex-shrink-0 overflow-hidden bg-neutral-100">
-                        <Image
-                          src={item.image}
-                          alt={item.name}
-                          fill
-                          className="object-cover"
-                        />
-                      </div>
+                    {/* Product Image */}
+                    <div className="relative h-24 w-24 sm:h-32 sm:w-32 flex-shrink-0 overflow-hidden rounded-2xl bg-neutral-50 shadow-sm transition-transform group-hover:scale-[1.02]">
+                      <Image
+                        src={item.image}
+                        alt={item.name}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
 
-                      {/* Product Details */}
-                      <div className="flex-1 min-w-0">
-                        <h3 className="mb-1 text-base font-bold text-neutral-900 break-words">
-                          {item.name}
-                        </h3>
-                        <p className="mb-1 text-sm font-normal text-neutral-900">
-                          {item.price.toLocaleString()} $
-                        </p>
+                    {/* Product Details */}
+                    <div className="flex flex-1 flex-col justify-between py-1">
+                      <div>
+                        <div className="flex justify-between items-start">
+                          <h3 className="text-base sm:text-lg font-medium text-slate-500 mb-1 line-clamp-2">
+                            {item.name}
+                          </h3>
+                          <p className="text-base sm:text-lg font-medium text-[#5B3A82] ml-4">
+                            ${item.price.toFixed(2)}
+                          </p>
+                        </div>
                         {item.variant && (
-                          <p className="mb-2 text-xs font-normal text-neutral-600 break-words">
+                          <p className="text-xs sm:text-sm text-neutral-400 font-light">
                             {item.variant}
                           </p>
                         )}
-                        
-                        {/* Quantity and Total on Mobile */}
-                        <div className="flex items-center justify-between mt-3">
-                          <div className="flex items-center gap-2">
-                            <label className="text-xs text-neutral-600">Qty:</label>
-                            <input
-                              type="number"
-                              value={item.quantity}
-                              onChange={(e) =>
-                                handleQuantityChange(
-                                  item.id,
-                                  parseInt(e.target.value) || 0
-                                )
-                              }
-                              min="1"
-                              className="h-8 w-12 border border-neutral-300 text-center text-sm font-normal text-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900"
-                            />
-                          </div>
-                          <div className="text-right">
-                            <p className="text-sm font-medium text-neutral-900">
-                              {(item.price * item.quantity).toLocaleString()} $
-                            </p>
-                          </div>
+                      </div>
+
+                      <div className="flex items-center justify-between mt-4">
+                        {/* Quantity Pill - Optimized for mobile */}
+                        <div className="flex items-center rounded-full border border-neutral-100 px-1 py-1 bg-white shadow-sm scale-90 sm:scale-100 origin-left">
+                          <button
+                            onClick={() =>
+                              handleQuantityChange(item.id, item.quantity - 1)
+                            }
+                            className="flex h-8 w-8 items-center justify-center text-[#5B3A82] hover:bg-purple-50 rounded-full transition-colors"
+                          >
+                            <Minus className="h-3 w-3" />
+                          </button>
+                          <span className="w-8 sm:w-10 text-center text-sm font-medium text-slate-600">
+                            {item.quantity}
+                          </span>
+                          <button
+                            onClick={() =>
+                              handleQuantityChange(item.id, item.quantity + 1)
+                            }
+                            className="flex h-8 w-8 items-center justify-center text-[#5B3A82] hover:bg-purple-50 rounded-full transition-colors"
+                          >
+                            <Plus className="h-3 w-3" />
+                          </button>
                         </div>
-                        
+
                         <button
                           onClick={() => removeFromCart(item.id)}
-                          className="mt-2 text-xs font-normal text-neutral-500 underline hover:text-neutral-900 transition-colors"
+                          className="flex items-center gap-1.5 text-[10px] sm:text-xs text-[#5B3A82] hover:text-red-500 transition-colors uppercase tracking-wider font-medium"
                         >
-                          Remove
+                          <Trash2 size={14} className="sm:w-4 sm:h-4" />
+                          <span>Remove</span>
                         </button>
                       </div>
                     </div>
@@ -121,124 +128,42 @@ export default function CartPage() {
                 ))}
               </div>
 
-              {/* Cart Table - Desktop Layout */}
-              <div className="hidden md:block overflow-x-auto">
-                <table className="w-full border-collapse">
-                  <thead>
-                    <tr className="border-b border-neutral-200">
-                      <th className="pb-4 text-left text-sm font-bold text-neutral-900">
-                        Product
-                      </th>
-                      <th className="pb-4 text-center text-sm font-bold text-neutral-900">
-                        Quantity
-                      </th>
-                      <th className="pb-4 text-right text-sm font-bold text-neutral-900">
-                        Total
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {cartItems.map((item) => (
-                      <tr
-                        key={item.id}
-                        className="border-b border-neutral-200 last:border-b-0"
-                      >
-                        {/* Product Column */}
-                        <td className="py-6">
-                          <div className="flex items-center gap-4">
-                            {/* Product Image */}
-                            <div className="relative h-24 w-24 flex-shrink-0 overflow-hidden bg-neutral-100">
-                              <Image
-                                src={item.image}
-                                alt={item.name}
-                                fill
-                                className="object-cover"
-                              />
-                            </div>
-
-                            {/* Product Details */}
-                            <div className="flex-1">
-                              <h3 className="mb-1 text-base font-bold text-neutral-900">
-                                {item.name}
-                              </h3>
-                              <p className="mb-1 text-sm font-normal text-neutral-900">
-                                {item.price.toLocaleString()} $
-                              </p>
-                              {item.variant && (
-                                <p className="mb-2 text-xs font-normal text-neutral-600">
-                                  {item.variant}
-                                </p>
-                              )}
-                              <button
-                                onClick={() => removeFromCart(item.id)}
-                                className="text-xs font-normal text-neutral-500 underline hover:text-neutral-900 transition-colors"
-                              >
-                                Remove
-                              </button>
-                            </div>
-                          </div>
-                        </td>
-
-                        {/* Quantity Column */}
-                        <td className="py-6 text-center">
-                          <div className="flex flex-col items-center gap-2">
-                            <input
-                              type="number"
-                              value={item.quantity}
-                              onChange={(e) =>
-                                handleQuantityChange(
-                                  item.id,
-                                  parseInt(e.target.value) || 0
-                                )
-                              }
-                              min="1"
-                              className="h-8 w-12 border border-neutral-300 text-center text-sm font-normal text-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900"
-                            />
-                            <button
-                              onClick={() => removeFromCart(item.id)}
-                              className="text-xs font-normal text-neutral-500 underline hover:text-neutral-900 transition-colors"
-                            >
-                              Remove
-                            </button>
-                          </div>
-                        </td>
-
-                        {/* Total Column */}
-                        <td className="py-6 text-right">
-                          <p className="text-base font-normal text-neutral-900">
-                            {(item.price * item.quantity).toLocaleString()} $
-                          </p>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-
               {/* Cart Summary */}
-              <div className="mt-12 flex flex-col items-end border-t border-neutral-200 pt-8">
-                <div className="w-full max-w-md space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-lg font-medium text-neutral-900">
-                      Total
+              <div className="mt-12 rounded-3xl bg-neutral-50/50 p-8 sm:p-10 border border-neutral-100">
+                <div className="flex flex-col gap-6">
+                  <div className="flex items-center justify-between border-b border-neutral-200 pb-6">
+                    <span className="text-sm font-medium text-[#5B3A82] uppercase tracking-[0.2em]">
+                      SUBTOTAL
                     </span>
-                    <span className="text-lg font-medium text-neutral-900">
-                      {totalPrice.toLocaleString()} $
+                    <span className="text-2xl font-medium text-[#5B3A82]">
+                      ${totalPrice.toFixed(2)}
                     </span>
                   </div>
-                  <p className="text-xs text-neutral-600">
-                    Taxes and shipping calculated at checkout
-                  </p>
-                  <button
-                    onClick={handleCheckout}
-                    className="w-full rounded-lg border-2 border-neutral-900 bg-neutral-900 px-6 py-4 text-sm font-medium uppercase tracking-wide text-white transition-all hover:bg-neutral-800 flex items-center justify-center gap-2"
-                  >
-                    <Lock className="h-4 w-4" />
-                    Checkout
-                  </button>
+
+                  <div className="space-y-4">
+                    <p className="text-center text-xs text-neutral-400 font-light italic">
+                      Taxes and shipping calculated at checkout
+                    </p>
+
+                    <div className="flex flex-col sm:flex-row gap-4">
+                      <Link
+                        href="/"
+                        className="flex-1 items-center justify-center rounded-full border border-[#5B3A82] px-8 py-4 text-center text-sm font-medium text-[#5B3A82] transition-all hover:bg-purple-50"
+                      >
+                        Continue Shopping
+                      </Link>
+                      <button
+                        onClick={handleCheckout}
+                        className="flex-[2] flex items-center justify-center gap-3 rounded-full bg-[#483063] px-8 py-4 text-center text-sm font-medium text-white shadow-xl hover:bg-[#5B3A82] transition-all"
+                      >
+                        <Lock className="h-4 w-4" />
+                        Complete Order
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </>
+            </div>
           )}
         </div>
       </main>

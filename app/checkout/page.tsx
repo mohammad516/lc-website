@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Lock } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useCart } from "@/contexts/CartContext";
@@ -17,7 +17,7 @@ interface DeliveryPrice {
 // Lebanon governorates and districts
 const lebanonData = {
   "Beirut": ["Beirut"],
-  "Mount Lebanon": ["Aley", "Baabda", "Chouf","Matn","Keserwan","Byblos"],
+  "Mount Lebanon": ["Aley", "Baabda", "Chouf", "Matn", "Keserwan", "Byblos"],
   "Akkar": ["Akkar"],
   "North Lebanon": ["Batroun", "Bcharre", "Koura", "Miniyeh-Danniyeh", "Tripoli", "Zgharta"],
   "South Lebanon": ["Jezzine", "Nabatieh", "Sidon", "Tyre"],
@@ -74,21 +74,21 @@ export default function CheckoutPage() {
     if (!formData.governorate) {
       return 0;
     }
-    
+
     const delivery = deliveryPrices.find(
       (d) => d.governorate === formData.governorate
     );
-    
+
     return delivery ? delivery.price : 0;
   };
 
   const shippingCost = getShippingCost();
-  
+
   const subtotal = cartItems.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
   );
-  
+
   const totalPrice = subtotal + shippingCost;
 
   const availableDistricts = formData.governorate
@@ -104,22 +104,22 @@ export default function CheckoutPage() {
 
   const handlePhoneInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value;
-    
+
     // Remove dashes, parentheses, and letters
     value = value.replace(/[-()a-zA-Z]/g, "");
-    
+
     // Auto-prepend +961 if missing
     if (!value.startsWith("+961") && value.length > 0) {
       // Remove any existing +961 or partial +961
       value = value.replace(/^\+?9?6?1?/, "");
       value = "+961" + value;
     }
-    
+
     setFormData((prev) => ({
       ...prev,
       phoneNumber: value,
     }));
-    
+
     // Clear error while typing (validation only on blur/submit)
     if (errors.phoneNumber) {
       setErrors((prev) => {
@@ -133,12 +133,12 @@ export default function CheckoutPage() {
   const handlePhoneKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     const input = e.currentTarget;
     const cursorPosition = input.selectionStart || 0;
-    
+
     // Prevent deleting +961 prefix
     if ((e.key === "Backspace" || e.key === "Delete") && cursorPosition <= 4) {
       e.preventDefault();
     }
-    
+
     // Allow digits, spaces, and + (but + is handled by formatter)
     if (e.key.length === 1 && !/[0-9+\s]/.test(e.key) && !e.ctrlKey && !e.metaKey) {
       e.preventDefault();
@@ -147,7 +147,7 @@ export default function CheckoutPage() {
 
   const handlePhoneBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     const { value } = e.target;
-    
+
     // Validate phone number on blur
     if (value.trim()) {
       if (!validatePhoneNumber(value)) {
@@ -169,12 +169,12 @@ export default function CheckoutPage() {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    
+
     // Handle phone number separately with auto-formatting
     if (name === "phoneNumber") {
       return; // Phone number is handled by handlePhoneInputChange
     }
-    
+
     setFormData((prev) => {
       const newData = { ...prev, [name]: value };
       // Reset district when governorate changes
@@ -183,7 +183,7 @@ export default function CheckoutPage() {
       }
       return newData;
     });
-    
+
     // Clear error for this field
     if (errors[name]) {
       setErrors((prev) => {
@@ -370,23 +370,27 @@ Payment Method: Cash on Delivery`;
       <Navbar />
       <main className="flex-1 pt-24 md:pt-28 lg:pt-32">
         <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-          <h1 className="mb-8 text-center text-2xl font-semibold text-neutral-900 md:text-3xl">
+          <h1 className="mb-12 text-center font-serif text-3xl font-normal tracking-wide text-[#5B3A82] md:text-4xl" style={{ fontFamily: 'var(--font-lora), serif' }}>
             Checkout
           </h1>
 
           {isSuccess ? (
-            <div className="mx-auto max-w-2xl">
-              <div className="rounded-lg border border-green-200 bg-white p-8 text-center">
-                <div className="mb-4 text-6xl">✓</div>
-                <h2 className="mb-4 text-2xl font-semibold text-green-900">
+            <div className="mx-auto max-w-2xl px-4">
+              <div className="rounded-3xl border border-purple-100 bg-white p-12 text-center shadow-xl">
+                <div className="mb-6 inline-flex h-20 w-20 items-center justify-center rounded-full bg-purple-50 text-[#5B3A82]">
+                  <svg className="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <h2 className="mb-4 text-2xl font-medium text-[#5B3A82]">
                   Order Sent Successfully!
                 </h2>
-                <p className="mb-6 text-lg text-green-800">
-                  Your order has been sent successfully. We will contact you soon.
+                <p className="mb-8 text-neutral-500 font-light leading-relaxed">
+                  Your order has been received. We will contact you soon on WhatsApp to confirm the details.
                 </p>
                 <button
                   onClick={() => router.push("/")}
-                  className="w-full rounded-md bg-neutral-900 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-neutral-800"
+                  className="w-full rounded-full bg-[#483063] px-8 py-4 text-sm font-medium text-white shadow-lg transition-all hover:bg-[#5B3A82]"
                 >
                   Continue Shopping
                 </button>
@@ -396,21 +400,22 @@ Payment Method: Cash on Delivery`;
             <form onSubmit={handleSubmit} className="mx-auto max-w-7xl">
               <div className="grid gap-6 lg:gap-8 lg:grid-cols-[60%_40%]">
                 {/* Left Column: Customer Information */}
-                <div className="space-y-6 bg-neutral-50 -mx-4 px-4 py-6 lg:mx-0 lg:px-6 lg:py-8 rounded-lg lg:rounded-none">
+                <div className="space-y-8 bg-white border border-neutral-100 -mx-4 px-4 py-8 sm:px-6 lg:mx-0 lg:px-8 lg:py-10 rounded-3xl shadow-sm">
                   {/* Customer Information Section */}
                   <div>
-                    <h2 className="mb-6 text-lg font-semibold text-neutral-900">
+                    <h2 className="mb-8 text-xl font-medium text-[#5B3A82] flex items-center gap-2">
+                      <span className="flex h-8 w-8 items-center justify-center rounded-full bg-purple-50 text-xs">1</span>
                       Customer Information
                     </h2>
 
-                    <div className="space-y-6">
+                    <div className="grid gap-6 sm:grid-cols-2">
                       {/* Full Name */}
-                      <div>
+                      <div className="sm:col-span-2">
                         <label
                           htmlFor="fullName"
-                          className="mb-1.5 block text-sm text-neutral-600"
+                          className="mb-2 block text-sm font-medium text-slate-500"
                         >
-                          Full Name <span className="text-red-500">*</span>
+                          Full Name <span className="text-red-400 font-light">*</span>
                         </label>
                         <input
                           type="text"
@@ -418,25 +423,24 @@ Payment Method: Cash on Delivery`;
                           name="fullName"
                           value={formData.fullName}
                           onChange={handleInputChange}
-                          className={`w-full rounded-md border bg-white px-4 py-3 text-neutral-900 placeholder:text-neutral-400 focus:border-neutral-800 focus:outline-none focus:ring-1 focus:ring-neutral-800 ${
-                            errors.fullName ? "border-red-500" : "border-neutral-300"
-                          }`}
-                          placeholder="Enter your full name"
+                          className={`w-full rounded-xl border bg-white px-5 py-3.5 text-neutral-900 placeholder:text-neutral-300 transition-all focus:border-[#5B3A82] focus:outline-none focus:ring-1 focus:ring-[#5B3A82] ${errors.fullName ? "border-red-300" : "border-neutral-200"
+                            }`}
+                          placeholder="Your legal name"
                         />
                         {errors.fullName && (
-                          <p className="mt-1 text-sm text-red-500">
+                          <p className="mt-1.5 text-xs text-red-500">
                             {errors.fullName}
                           </p>
                         )}
                       </div>
 
                       {/* Phone Number */}
-                      <div>
+                      <div className="sm:col-span-2">
                         <label
                           htmlFor="phoneNumber"
-                          className="mb-1.5 block text-sm text-neutral-600"
+                          className="mb-2 block text-sm font-medium text-slate-500"
                         >
-                          Phone Number <span className="text-red-500">*</span>
+                          Phone Number <span className="text-red-400 font-light">*</span>
                         </label>
                         <input
                           type="tel"
@@ -446,15 +450,14 @@ Payment Method: Cash on Delivery`;
                           onChange={handlePhoneInputChange}
                           onBlur={handlePhoneBlur}
                           onKeyDown={handlePhoneKeyDown}
-                          className={`w-full rounded-md border bg-white px-4 py-3 text-neutral-900 placeholder:text-neutral-400 focus:border-neutral-800 focus:outline-none focus:ring-1 focus:ring-neutral-800 ${
-                            errors.phoneNumber
-                              ? "border-red-500"
-                              : "border-neutral-300"
-                          }`}
-                          placeholder="+961 70 717 397"
+                          className={`w-full rounded-xl border bg-white px-5 py-3.5 text-neutral-900 placeholder:text-neutral-300 transition-all focus:border-[#5B3A82] focus:outline-none focus:ring-1 focus:ring-[#5B3A82] ${errors.phoneNumber
+                            ? "border-red-300"
+                            : "border-neutral-200"
+                            }`}
+                          placeholder="+961 70 123 456"
                         />
                         {errors.phoneNumber && (
-                          <p className="mt-1 text-sm text-red-500">
+                          <p className="mt-1.5 text-xs text-red-500">
                             {errors.phoneNumber}
                           </p>
                         )}
@@ -463,26 +466,27 @@ Payment Method: Cash on Delivery`;
                   </div>
 
                   {/* Delivery Section */}
-                  <div>
-                    <h3 className="mb-6 text-lg font-semibold text-neutral-900">
-                      Delivery
+                  <div className="pt-4">
+                    <h3 className="mb-8 text-xl font-medium text-[#5B3A82] flex items-center gap-2">
+                      <span className="flex h-8 w-8 items-center justify-center rounded-full bg-purple-50 text-xs">2</span>
+                      Delivery Address
                     </h3>
 
-                    <div className="space-y-6">
+                    <div className="grid gap-6 sm:grid-cols-2">
                       {/* Country/Region */}
                       <div>
                         <label
                           htmlFor="country"
-                          className="mb-1.5 block text-sm text-neutral-600"
+                          className="mb-2 block text-sm font-medium text-slate-500"
                         >
-                          Country/Region <span className="text-red-500">*</span>
+                          Country/Region
                         </label>
                         <select
                           id="country"
                           name="country"
                           value={formData.country}
                           onChange={handleInputChange}
-                          className="w-full rounded-md border border-neutral-300 bg-white px-4 py-3 text-neutral-900 focus:border-neutral-800 focus:outline-none focus:ring-1 focus:ring-neutral-800 disabled:bg-neutral-50 disabled:cursor-not-allowed"
+                          className="w-full rounded-xl border border-neutral-200 bg-neutral-50 px-5 py-3.5 text-neutral-900 cursor-not-allowed opacity-70"
                           disabled
                         >
                           <option value="Lebanon">Lebanon</option>
@@ -493,30 +497,32 @@ Payment Method: Cash on Delivery`;
                       <div>
                         <label
                           htmlFor="governorate"
-                          className="mb-1.5 block text-sm text-neutral-600"
+                          className="mb-2 block text-sm font-medium text-slate-500"
                         >
-                          Governorate <span className="text-red-500">*</span>
+                          Governorate <span className="text-red-400 font-light">*</span>
                         </label>
-                        <select
-                          id="governorate"
-                          name="governorate"
-                          value={formData.governorate}
-                          onChange={handleInputChange}
-                          className={`w-full rounded-md border bg-white px-4 py-3 text-neutral-900 focus:border-neutral-800 focus:outline-none focus:ring-1 focus:ring-neutral-800 ${
-                            errors.governorate
-                              ? "border-red-500"
-                              : "border-neutral-300"
-                          }`}
-                        >
-                          <option value="">Select Governorate</option>
-                          {Object.keys(lebanonData).map((gov) => (
-                            <option key={gov} value={gov}>
-                              {gov}
-                            </option>
-                          ))}
-                        </select>
+                        <div className="relative">
+                          <select
+                            id="governorate"
+                            name="governorate"
+                            value={formData.governorate}
+                            onChange={handleInputChange}
+                            className={`w-full rounded-xl border bg-white px-5 py-3.5 text-neutral-900 appearance-none focus:border-[#5B3A82] focus:outline-none focus:ring-1 focus:ring-[#5B3A82] ${errors.governorate
+                              ? "border-red-300"
+                              : "border-neutral-200"
+                              }`}
+                          >
+                            <option value="">Select</option>
+                            {Object.keys(lebanonData).map((gov) => (
+                              <option key={gov} value={gov}>
+                                {gov}
+                              </option>
+                            ))}
+                          </select>
+                          <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400 pointer-events-none" />
+                        </div>
                         {errors.governorate && (
-                          <p className="mt-1 text-sm text-red-500">
+                          <p className="mt-1.5 text-xs text-red-500">
                             {errors.governorate}
                           </p>
                         )}
@@ -526,35 +532,37 @@ Payment Method: Cash on Delivery`;
                       <div>
                         <label
                           htmlFor="district"
-                          className="mb-1.5 block text-sm text-neutral-600"
+                          className="mb-2 block text-sm font-medium text-slate-500"
                         >
-                          District <span className="text-red-500">*</span>
+                          District <span className="text-red-400 font-light">*</span>
                         </label>
-                        <select
-                          id="district"
-                          name="district"
-                          value={formData.district}
-                          onChange={handleInputChange}
-                          disabled={!formData.governorate}
-                          className={`w-full rounded-md border bg-white px-4 py-3 text-neutral-900 focus:border-neutral-800 focus:outline-none focus:ring-1 focus:ring-neutral-800 disabled:bg-neutral-50 disabled:cursor-not-allowed ${
-                            errors.district
-                              ? "border-red-500"
-                              : "border-neutral-300"
-                          }`}
-                        >
-                          <option value="">
-                            {formData.governorate
-                              ? "Select District"
-                              : "Select Governorate first"}
-                          </option>
-                          {availableDistricts.map((district) => (
-                            <option key={district} value={district}>
-                              {district}
+                        <div className="relative">
+                          <select
+                            id="district"
+                            name="district"
+                            value={formData.district}
+                            onChange={handleInputChange}
+                            disabled={!formData.governorate}
+                            className={`w-full rounded-xl border bg-white px-5 py-3.5 text-neutral-900 appearance-none disabled:bg-neutral-50 disabled:cursor-not-allowed focus:border-[#5B3A82] focus:outline-none focus:ring-1 focus:ring-[#5B3A82] ${errors.district
+                              ? "border-red-300"
+                              : "border-neutral-200"
+                              }`}
+                          >
+                            <option value="">
+                              {formData.governorate
+                                ? "Select"
+                                : "Select governorate first"}
                             </option>
-                          ))}
-                        </select>
+                            {availableDistricts.map((district) => (
+                              <option key={district} value={district}>
+                                {district}
+                              </option>
+                            ))}
+                          </select>
+                          <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400 pointer-events-none" />
+                        </div>
                         {errors.district && (
-                          <p className="mt-1 text-sm text-red-500">
+                          <p className="mt-1.5 text-xs text-red-500">
                             {errors.district}
                           </p>
                         )}
@@ -564,9 +572,9 @@ Payment Method: Cash on Delivery`;
                       <div>
                         <label
                           htmlFor="city"
-                          className="mb-1.5 block text-sm text-neutral-600"
+                          className="mb-2 block text-sm font-medium text-slate-500"
                         >
-                          City / Town <span className="text-red-500">*</span>
+                          City / Town <span className="text-red-400 font-light">*</span>
                         </label>
                         <input
                           type="text"
@@ -574,13 +582,12 @@ Payment Method: Cash on Delivery`;
                           name="city"
                           value={formData.city}
                           onChange={handleInputChange}
-                          className={`w-full rounded-md border bg-white px-4 py-3 text-neutral-900 placeholder:text-neutral-400 focus:border-neutral-800 focus:outline-none focus:ring-1 focus:ring-neutral-800 ${
-                            errors.city ? "border-red-500" : "border-neutral-300"
-                          }`}
-                          placeholder="Enter city or town"
+                          className={`w-full rounded-xl border bg-white px-5 py-3.5 text-neutral-900 placeholder:text-neutral-300 focus:border-[#5B3A82] focus:outline-none focus:ring-1 focus:ring-[#5B3A82] ${errors.city ? "border-red-300" : "border-neutral-200"
+                            }`}
+                          placeholder="e.g. Beirut"
                         />
                         {errors.city && (
-                          <p className="mt-1 text-sm text-red-500">
+                          <p className="mt-1.5 text-xs text-red-500">
                             {errors.city}
                           </p>
                         )}
@@ -589,19 +596,20 @@ Payment Method: Cash on Delivery`;
                   </div>
 
                   {/* Address Details Section */}
-                  <div>
-                    <h3 className="mb-6 text-lg font-semibold text-neutral-900">
+                  <div className="pt-4">
+                    <h3 className="mb-8 text-xl font-medium text-[#5B3A82] flex items-center gap-2">
+                      <span className="flex h-8 w-8 items-center justify-center rounded-full bg-purple-50 text-xs">3</span>
                       Address Details
                     </h3>
 
-                    <div className="space-y-6">
+                    <div className="grid gap-6 sm:grid-cols-2">
                       {/* Street Name */}
-                      <div>
+                      <div className="sm:col-span-2">
                         <label
                           htmlFor="streetName"
-                          className="mb-1.5 block text-sm text-neutral-600"
+                          className="mb-2 block text-sm font-medium text-slate-500"
                         >
-                          Street Name <span className="text-red-500">*</span>
+                          Street Name <span className="text-red-400 font-light">*</span>
                         </label>
                         <input
                           type="text"
@@ -609,27 +617,26 @@ Payment Method: Cash on Delivery`;
                           name="streetName"
                           value={formData.streetName}
                           onChange={handleInputChange}
-                          className={`w-full rounded-md border bg-white px-4 py-3 text-neutral-900 placeholder:text-neutral-400 focus:border-neutral-800 focus:outline-none focus:ring-1 focus:ring-neutral-800 ${
-                            errors.streetName
-                              ? "border-red-500"
-                              : "border-neutral-300"
-                          }`}
-                          placeholder="Enter street name"
+                          className={`w-full rounded-xl border bg-white px-5 py-3.5 text-neutral-900 placeholder:text-neutral-300 focus:border-[#5B3A82] focus:outline-none focus:ring-1 focus:ring-[#5B3A82] ${errors.streetName
+                            ? "border-red-300"
+                            : "border-neutral-200"
+                            }`}
+                          placeholder="Street name, landmark"
                         />
                         {errors.streetName && (
-                          <p className="mt-1 text-sm text-red-500">
+                          <p className="mt-1.5 text-xs text-red-500">
                             {errors.streetName}
                           </p>
                         )}
                       </div>
 
                       {/* Building Name */}
-                      <div>
+                      <div className="sm:col-span-2">
                         <label
                           htmlFor="buildingName"
-                          className="mb-1.5 block text-sm text-neutral-600"
+                          className="mb-2 block text-sm font-medium text-slate-500"
                         >
-                          Building Name
+                          Building Name / Floor
                         </label>
                         <input
                           type="text"
@@ -637,24 +644,28 @@ Payment Method: Cash on Delivery`;
                           name="buildingName"
                           value={formData.buildingName}
                           onChange={handleInputChange}
-                          className="w-full rounded-md border border-neutral-300 bg-white px-4 py-3 text-neutral-900 placeholder:text-neutral-400 focus:border-neutral-800 focus:outline-none focus:ring-1 focus:ring-neutral-800"
-                          placeholder="Enter building name (optional)"
+                          className="w-full rounded-xl border border-neutral-200 bg-white px-5 py-3.5 text-neutral-900 placeholder:text-neutral-300 focus:border-[#5B3A82] focus:outline-none focus:ring-1 focus:ring-[#5B3A82]"
+                          placeholder="Building, floor, apartment"
                         />
                       </div>
                     </div>
                   </div>
 
                   {/* Shipping Method Section */}
-                  <div>
-                    <h3 className="mb-6 text-lg font-semibold text-neutral-900">
-                      Shipping method
+                  <div className="pt-4">
+                    <h3 className="mb-6 text-xl font-medium text-[#5B3A82] flex items-center gap-2">
+                      <span className="flex h-8 w-8 items-center justify-center rounded-full bg-purple-50 text-xs">4</span>
+                      Shipping Method
                     </h3>
-                    <div className="rounded-md border border-neutral-200 bg-white p-4">
+                    <div className="rounded-2xl border border-purple-100 bg-purple-50/30 p-5">
                       <div className="flex items-center justify-between">
-                        <span className="text-base font-normal text-neutral-900">
-                          Deliver All Over Lebanon
-                        </span>
-                        <span className="text-base font-normal text-neutral-900">
+                        <div className="flex items-center gap-3 text-[#5B3A82]">
+                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1m-6 0a1 1 0 001-1m9 1a1 1 0 01-1 1h-1m-6 0a1 1 0 01-1-1" />
+                          </svg>
+                          <span className="font-medium">Deliver All Over Lebanon</span>
+                        </div>
+                        <span className="font-semibold text-[#5B3A82]">
                           ${shippingCost.toFixed(2)}
                         </span>
                       </div>
@@ -664,16 +675,16 @@ Payment Method: Cash on Delivery`;
 
                 {/* Right Column: Order Summary & Payment - Desktop */}
                 <div className="hidden lg:block lg:sticky lg:top-24 lg:self-start">
-                  <div className="rounded-lg border border-neutral-200 bg-white shadow-sm p-6">
-                    <h2 className="mb-6 text-lg font-semibold text-neutral-900">
+                  <div className="rounded-3xl border border-neutral-100 bg-white shadow-xl p-8">
+                    <h2 className="mb-8 text-xl font-medium text-[#5B3A82]">
                       Order Summary
                     </h2>
 
-                    <div className="mb-6 space-y-4">
+                    <div className="mb-8 space-y-6 max-h-[400px] overflow-y-auto pr-2 scrollbar-hide">
                       {cartItems.map((item, index) => (
-                        <div key={item.id}>
-                          <div className="flex gap-4">
-                            <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-md bg-neutral-100">
+                        <div key={item.id} className="group">
+                          <div className="flex gap-5">
+                            <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-2xl bg-neutral-50 shadow-sm transition-transform group-hover:scale-105">
                               <Image
                                 src={item.image}
                                 alt={item.name}
@@ -681,66 +692,72 @@ Payment Method: Cash on Delivery`;
                                 className="object-cover"
                               />
                             </div>
-                            <div className="flex-1 min-w-0">
-                              <h3 className="mb-0.5 text-sm font-semibold text-neutral-900">
+                            <div className="flex-1 min-w-0 flex flex-col justify-center">
+                              <h3 className="mb-1 text-sm font-medium text-slate-600 truncate">
                                 {item.name}
                               </h3>
                               {item.variant && (
-                                <p className="mb-1 text-xs text-neutral-500">
+                                <p className="mb-1 text-xs text-neutral-400 font-light">
                                   {item.variant}
                                 </p>
                               )}
-                              <p className="mb-1 text-xs text-neutral-600">
-                                Quantity: {item.quantity}
-                              </p>
-                              <p className="text-sm font-medium text-neutral-900 text-right">
-                                ${item.price.toLocaleString()}
-                              </p>
+                              <div className="flex justify-between items-center mt-1">
+                                <p className="text-xs text-neutral-500">
+                                  Qty: <span className="text-[#5B3A82] font-medium">{item.quantity}</span>
+                                </p>
+                                <p className="text-sm font-medium text-[#5B3A82]">
+                                  ${(item.price * item.quantity).toFixed(2)}
+                                </p>
+                              </div>
                             </div>
                           </div>
                           {index < cartItems.length - 1 && (
-                            <div className="mt-4 border-t border-neutral-200"></div>
+                            <div className="mt-6 border-t border-neutral-50"></div>
                           )}
                         </div>
                       ))}
                     </div>
 
                     {/* Payment Method */}
-                    <div className="mb-6 border-t border-neutral-200 pt-6">
-                      <h3 className="mb-4 text-base font-semibold text-neutral-900">
+                    <div className="mb-8 border-t border-neutral-100 pt-8">
+                      <h3 className="mb-4 text-sm font-medium text-[#5B3A82] uppercase tracking-wider">
                         Payment Method
                       </h3>
-                      <div className="rounded-md border border-neutral-200 bg-neutral-50 p-3">
-                        <p className="text-sm font-normal text-neutral-900">
+                      <div className="rounded-2xl border border-purple-100 bg-purple-50/20 p-4 border-dashed">
+                        <p className="text-sm font-normal text-[#5B3A82] flex items-center gap-2">
+                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" />
+                            <path fillRule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clipRule="evenodd" />
+                          </svg>
                           Cash on Delivery
                         </p>
                       </div>
                     </div>
 
                     {/* Order Summary Totals */}
-                    <div className="mb-6 border-t border-neutral-200 pt-6 space-y-3">
+                    <div className="mb-8 border-t border-neutral-100 pt-8 space-y-4">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-normal text-neutral-600">
+                        <span className="text-sm font-light text-neutral-500">
                           Subtotal
                         </span>
-                        <span className="text-sm font-normal text-neutral-900">
-                          ${subtotal.toLocaleString()}
+                        <span className="text-sm font-medium text-slate-600">
+                          ${subtotal.toFixed(2)}
                         </span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-normal text-neutral-600">
+                        <span className="text-sm font-light text-neutral-500">
                           Shipping
                         </span>
-                        <span className="text-sm font-normal text-neutral-900">
+                        <span className="text-sm font-medium text-slate-600">
                           ${shippingCost.toFixed(2)}
                         </span>
                       </div>
-                      <div className="flex items-center justify-between border-t border-neutral-200 pt-3">
-                        <span className="text-base font-semibold text-neutral-900">
+                      <div className="flex items-center justify-between border-t border-neutral-100 pt-4">
+                        <span className="text-lg font-medium text-[#5B3A82]">
                           Total
                         </span>
-                        <span className="text-base font-semibold text-neutral-900">
-                          ${totalPrice.toLocaleString()}
+                        <span className="text-2xl font-semibold text-[#5B3A82]">
+                          ${totalPrice.toFixed(2)}
                         </span>
                       </div>
                     </div>
@@ -749,129 +766,143 @@ Payment Method: Cash on Delivery`;
                     <button
                       type="submit"
                       disabled={isSubmitting || isSuccess}
-                      className="w-full rounded-md bg-black px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-neutral-800 disabled:cursor-not-allowed disabled:opacity-50"
+                      className="w-full rounded-full bg-[#483063] px-8 py-5 text-sm font-medium text-white shadow-xl transition-all hover:bg-[#5B3A82] disabled:cursor-not-allowed disabled:opacity-50 flex items-center justify-center gap-2"
                     >
-                      {isSubmitting ? "Sending..." : "Confirm Order"}
+                      {isSubmitting ? "Sending..." : (
+                        <>
+                          <Lock className="w-4 h-4" />
+                          Complete Payment
+                        </>
+                      )}
                     </button>
+
+                    <p className="mt-4 text-center text-[10px] text-neutral-400 font-light">
+                      By clicking complete, you agree to our terms of service.
+                    </p>
                   </div>
                 </div>
 
                 {/* Mobile: Order Summary */}
                 <div className="lg:hidden">
-                  {/* Mobile: Collapsible Header - Products Only */}
-                  <button
-                    type="button"
-                    onClick={() => setIsOrderSummaryOpen(!isOrderSummaryOpen)}
-                    className="w-full flex items-center justify-between py-3 px-4 bg-transparent border-b border-neutral-200 transition-colors duration-200 hover:bg-neutral-50/50"
-                  >
-                    <div className="flex items-center gap-3">
-                      <h2 className="text-base font-semibold text-neutral-900">
-                        Order Summary
-                      </h2>
-                     
-                    </div>
-                    <ChevronDown
-                      className={`h-5 w-5 text-neutral-600 transition-transform duration-200 ease-in-out ${
-                        isOrderSummaryOpen ? "rotate-180" : ""
-                      }`}
-                    />
-                  </button>
+                  <div className="rounded-3xl border border-neutral-100 bg-white shadow-lg overflow-hidden">
+                    {/* Mobile: Collapsible Header */}
+                    <button
+                      type="button"
+                      onClick={() => setIsOrderSummaryOpen(!isOrderSummaryOpen)}
+                      className="w-full flex items-center justify-between py-6 px-6 bg-purple-50/30 transition-colors duration-200 hover:bg-purple-50"
+                    >
+                      <div className="flex items-center gap-3">
+                        <h2 className="text-base font-medium text-[#5B3A82] uppercase tracking-wider">
+                          Order Summary
+                        </h2>
+                      </div>
+                      <ChevronDown
+                        className={`h-5 w-5 text-[#5B3A82] transition-transform duration-300 ${isOrderSummaryOpen ? "rotate-180" : ""
+                          }`}
+                      />
+                    </button>
 
-                  {/* Mobile: Collapsible Products Dropdown */}
-                  <div
-                    className={`overflow-hidden transition-all duration-200 ease-in-out ${
-                      isOrderSummaryOpen
+                    {/* Mobile: Collapsible Products */}
+                    <div
+                      className={`overflow-hidden transition-all duration-300 ease-in-out ${isOrderSummaryOpen
                         ? "max-h-[2000px] opacity-100"
                         : "max-h-0 opacity-0"
-                    }`}
-                  >
-                    <div className="py-4 space-y-4 border-b border-neutral-200">
-                      {cartItems.map((item, index) => (
-                        <div key={item.id}>
-                          <div className="flex gap-3 px-4">
-                            <div className="relative h-14 w-14 flex-shrink-0 overflow-hidden rounded-md bg-neutral-100">
-                              <Image
-                                src={item.image}
-                                alt={item.name}
-                                fill
-                                className="object-cover"
-                              />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                            
-                              <h3 className="mb-0.5 text-sm font-semibold text-neutral-900">
-                                {item.name}
-                              </h3>
-                              {item.variant && (
-                                <p className="mb-0.5 text-xs text-neutral-500">
-                                  {item.variant}
-                                </p>
-                              )}
-                              <p className="mb-1 text-xs text-neutral-600">
-                                Quantity: {item.quantity}
-                              </p>
-                              <p className="text-sm font-medium text-neutral-900 text-right">
-                                ${item.price.toLocaleString()}
-                              </p>
-                            </div>
-                          </div>
-                          {index < cartItems.length - 1 && (
-                            <div className="mt-3 border-t border-neutral-100"></div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Mobile: Always Visible - Payment Method */}
-                  <div className="py-4 border-b border-neutral-200">
-                    <h3 className="mb-3 text-sm font-semibold text-neutral-900 px-4">
-                      Payment Method
-                    </h3>
-                    <div className="mx-4 rounded-md border border-neutral-200 bg-neutral-50 p-3">
-                      <p className="text-sm font-normal text-neutral-900">
-                        Cash on Delivery
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Mobile: Always Visible - Totals */}
-                  <div className="py-4 space-y-2 border-b border-neutral-200">
-                    <div className="flex items-center justify-between px-4">
-                      <span className="text-sm font-normal text-neutral-500">
-                        Subtotal
-                      </span>
-                      <span className="text-sm font-normal text-neutral-700">
-                        ${subtotal.toLocaleString()}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between px-4">
-                      <span className="text-sm font-normal text-neutral-500">
-                        Shipping
-                      </span>
-                      <span className="text-sm font-normal text-neutral-700">
-                        ${shippingCost.toFixed(2)}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between pt-2 border-t border-neutral-200 px-4">
-                      <span className="text-base font-semibold text-neutral-900">
-                        Total
-                      </span>
-                      <span className="text-base font-semibold text-neutral-900">
-                        ${totalPrice.toLocaleString()}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Mobile: Always Visible - Confirm Order Button */}
-                  <div className="p-4">
-                    <button
-                      type="submit"
-                      disabled={isSubmitting || isSuccess}
-                      className="w-full rounded-md bg-black px-6 py-4 text-sm font-medium text-white transition-colors duration-200 hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-neutral-800 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                        }`}
                     >
-                      {isSubmitting ? "Sending..." : "Confirm Order"}
-                    </button>
+                      <div className="py-6 space-y-6 border-b border-neutral-100 px-6">
+                        {cartItems.map((item, index) => (
+                          <div key={item.id}>
+                            <div className="flex gap-4">
+                              <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl bg-neutral-50">
+                                <Image
+                                  src={item.image}
+                                  alt={item.name}
+                                  fill
+                                  className="object-cover"
+                                />
+                              </div>
+                              <div className="flex-1 min-w-0 flex flex-col justify-center">
+                                <h3 className="mb-0.5 text-sm font-medium text-slate-600 truncate">
+                                  {item.name}
+                                </h3>
+                                {item.variant && (
+                                  <p className="mb-0.5 text-[10px] text-neutral-400 uppercase tracking-widest">
+                                    {item.variant}
+                                  </p>
+                                )}
+                                <div className="flex justify-between items-center mt-1">
+                                  <p className="text-xs text-neutral-400">
+                                    Qty: <span className="text-[#5B3A82]">{item.quantity}</span>
+                                  </p>
+                                  <p className="text-sm font-medium text-[#5B3A82]">
+                                    ${(item.price * item.quantity).toFixed(2)}
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                            {index < cartItems.length - 1 && (
+                              <div className="mt-4 border-t border-neutral-50"></div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Mobile: Totals */}
+                    <div className="py-8 space-y-4 border-b border-neutral-100 px-8">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-light text-neutral-500">
+                          Subtotal
+                        </span>
+                        <span className="text-sm font-medium text-slate-600">
+                          ${subtotal.toFixed(2)}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-light text-neutral-500">
+                          Shipping
+                        </span>
+                        <span className="text-sm font-medium text-slate-600">
+                          ${shippingCost.toFixed(2)}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between pt-4 border-t border-neutral-100">
+                        <span className="text-lg font-medium text-[#5B3A82]">
+                          Total
+                        </span>
+                        <span className="text-2xl font-semibold text-[#5B3A82]">
+                          ${totalPrice.toFixed(2)}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Mobile: Payment & Confirm */}
+                    <div className="p-8 space-y-6">
+                      <div>
+                        <h3 className="mb-3 text-xs font-medium text-neutral-400 uppercase tracking-widest">
+                          Payment Method
+                        </h3>
+                        <div className="rounded-xl border border-purple-100 bg-purple-50/20 p-4 border-dashed">
+                          <p className="text-sm font-normal text-[#5B3A82] flex items-center gap-2">
+                            <span className="h-2 w-2 rounded-full bg-[#5B3A82] animate-pulse"></span>
+                            Cash on Delivery
+                          </p>
+                        </div>
+                      </div>
+
+                      <button
+                        type="submit"
+                        disabled={isSubmitting || isSuccess}
+                        className="w-full rounded-full bg-[#483063] px-6 py-5 text-sm font-medium text-white shadow-xl transition-all hover:bg-[#5B3A82] focus:outline-none focus:ring-2 focus:ring-purple-200 disabled:cursor-not-allowed disabled:opacity-50 flex items-center justify-center gap-3"
+                      >
+                        {isSubmitting ? "Processing..." : (
+                          <>
+                            <Lock className="w-4 h-4" />
+                            Confirm Order
+                          </>
+                        )}
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
