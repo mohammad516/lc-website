@@ -6,17 +6,21 @@ import { Play, Mail, ArrowRight, Instagram } from "lucide-react";
 import { mockPosts, CommunityPost } from "./mockPosts";
 import CommunityModal from "./CommunityModal";
 
+const displayedPosts = mockPosts.slice(0, 8);
+
 export default function CommunityGrid() {
-    const [selectedPost, setSelectedPost] = useState<CommunityPost | null>(null);
+    const [selectedPostIndex, setSelectedPostIndex] = useState<number | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [activePostId, setActivePostId] = useState<string | null>(null);
 
-    const handlePostClick = (post: CommunityPost) => {
+    const selectedPost = selectedPostIndex !== null ? displayedPosts[selectedPostIndex] : null;
+
+    const handlePostClick = (post: CommunityPost, index: number) => {
         // On mobile: first tap shows overlay, second tap opens modal
         // On desktop: always open modal (hover handles overlay)
         if (activePostId === post.id) {
             // Second tap - open modal
-            setSelectedPost(post);
+            setSelectedPostIndex(index);
             setIsModalOpen(true);
             setActivePostId(null);
         } else {
@@ -27,7 +31,19 @@ export default function CommunityGrid() {
 
     const handleCloseModal = () => {
         setIsModalOpen(false);
-        setSelectedPost(null);
+        setSelectedPostIndex(null);
+    };
+
+    const handlePrevious = () => {
+        if (selectedPostIndex !== null && selectedPostIndex > 0) {
+            setSelectedPostIndex(selectedPostIndex - 1);
+        }
+    };
+
+    const handleNext = () => {
+        if (selectedPostIndex !== null && selectedPostIndex < displayedPosts.length - 1) {
+            setSelectedPostIndex(selectedPostIndex + 1);
+        }
     };
 
     return (
@@ -56,12 +72,12 @@ export default function CommunityGrid() {
 
                 {/* Grid - Fluidly Responsive */}
                 <div className="grid grid-cols-4 gap-2 md:gap-4 mb-8 mx-auto w-full max-w-[340px] md:max-w-[1320px]">
-                    {mockPosts.slice(0, 8).map((post) => {
+                    {displayedPosts.map((post, index) => {
                         const isActive = activePostId === post.id;
                         return (
                             <button
                                 key={post.id}
-                                onClick={() => handlePostClick(post)}
+                                onClick={() => handlePostClick(post, index)}
                                 className="relative w-full aspect-[4/5] rounded-lg overflow-hidden group cursor-pointer focus:outline-none"
                             >
                                 {/* Cover Image */}
@@ -107,6 +123,8 @@ export default function CommunityGrid() {
                 post={selectedPost}
                 isOpen={isModalOpen}
                 onClose={handleCloseModal}
+                onPrevious={selectedPostIndex !== null && selectedPostIndex > 0 ? handlePrevious : undefined}
+                onNext={selectedPostIndex !== null && selectedPostIndex < displayedPosts.length - 1 ? handleNext : undefined}
             />
         </section>
     );
