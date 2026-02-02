@@ -4,6 +4,7 @@ import FeaturedProducts from "@/components/FeaturedProducts";
 import Categories from "@/components/Categories";
 import Footer from "@/components/Footer";
 import ShopNow from "@/components/ShopNow";
+import CommunityGrid from "@/components/Community/CommunityGrid";
 
 export default function Home() {
   return (
@@ -13,7 +14,7 @@ export default function Home() {
         <Hero />
         <FeaturedProducts />
         <ShopNow />
-        <Categories />
+        <CommunityGrid />
       </main>
       <Footer />
     </div>
