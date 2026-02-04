@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { motion, useScroll, useTransform } from "framer-motion";
 
 interface HeroImage {
@@ -362,19 +363,10 @@ export default function Hero() {
               />
             </motion.a>
 
-            <motion.a
-              href="#categories"
+            <Link
+              href="/category/all"
               aria-label="View Products"
-              onClick={(e) => {
-                e.preventDefault();
-                const categoriesSection = document.getElementById('categories');
-                if (categoriesSection) {
-                  categoriesSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-              }}
-              className="group relative inline-flex w-full sm:w-auto items-center justify-center rounded-full border-2 border-white/90 backdrop-blur-sm px-4 sm:px-8 py-2.5 sm:py-4 text-xs sm:text-base font-semibold text-white overflow-hidden min-h-[40px] sm:min-h-[56px]"
-              whileHover={{ scale: 1.05, borderColor: "#5B3A82" }}
-              whileTap={{ scale: 0.95 }}
+              className="group relative inline-flex w-full sm:w-auto items-center justify-center rounded-full border-2 border-white/90 backdrop-blur-sm px-4 sm:px-8 py-2.5 sm:py-4 text-xs sm:text-base font-semibold text-white overflow-hidden min-h-[40px] sm:min-h-[56px] transition-all duration-300 hover:scale-105 hover:border-[#5B3A82]"
               style={{
                 boxShadow: "0 5px 20px rgba(0,0,0,0.4), inset 0 0 15px rgba(255,255,255,0.08)"
               }}
@@ -384,7 +376,7 @@ export default function Hero() {
                 transition={{ duration: 0.3 }}
               />
               <span className="relative z-10">View Products</span>
-            </motion.a>
+            </Link>
           </motion.div>
         </motion.div>
       </div>

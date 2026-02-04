@@ -13,9 +13,11 @@ interface CommunityModalProps {
     onClose: () => void;
     onPrevious?: () => void;
     onNext?: () => void;
+    accountName?: string;
+    logo?: string;
 }
 
-export default function CommunityModal({ post, isOpen, onClose, onPrevious, onNext }: CommunityModalProps) {
+export default function CommunityModal({ post, isOpen, onClose, onPrevious, onNext, accountName, logo }: CommunityModalProps) {
     const [isMuted, setIsMuted] = useState(true);
     const [isPlaying, setIsPlaying] = useState(true);
     const videoRef = useRef<HTMLVideoElement>(null);
@@ -57,7 +59,7 @@ export default function CommunityModal({ post, isOpen, onClose, onPrevious, onNe
                     <div className="w-8 h-8 rounded-full overflow-hidden bg-gradient-to-br from-purple-400 via-pink-500 to-orange-400 p-[2px]">
                         <div className="w-full h-full rounded-full overflow-hidden bg-white">
                             <Image
-                                src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop"
+                                src={logo || "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop"}
                                 alt="Profile"
                                 width={32}
                                 height={32}
@@ -65,7 +67,7 @@ export default function CommunityModal({ post, isOpen, onClose, onPrevious, onNe
                             />
                         </div>
                     </div>
-                    <span className="font-medium text-neutral-800">l_c_organic</span>
+                    <span className="font-medium text-neutral-800">{accountName || 'l_c_organic'}</span>
                 </div>
 
                 {/* Media Container - object-contain on mobile to prevent cropping */}

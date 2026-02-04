@@ -22,13 +22,11 @@ interface Product {
   category?: string;
 }
 
-// Category tabs configuration
-const CATEGORY_TABS = [
-  { id: "hair-routine", label: "Hair Routine" },
-  { id: "hair-fragrance", label: "Hair Fragrance" },
-  { id: "hair-styling", label: "Hair Styling" },
-  { id: "hair-accessories", label: "Hair Accessories" },
-] as const;
+interface Category {
+  id: string;
+  name: string;
+  slug: string;
+}
 
 // Colors from design
 const PRIMARY_PURPLE = "#5B3A82";
@@ -38,8 +36,31 @@ const PRICE_COLOR = "#888888"; // Gray for prices
 export default function FeaturedProducts() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<string>("hair-routine");
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [activeTab, setActiveTab] = useState<string>("");
   const tabsContainerRef = useRef<HTMLDivElement>(null);
+
+  // Fetch categories on mount
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch('/api/categories');
+        if (response.ok) {
+          const data = await response.json();
+          setCategories(data);
+          // Set first category as active by default
+          if (data.length > 0) {
+            setActiveTab(data[0].id);
+          }
+        } else {
+          console.error('Failed to fetch categories');
+        }
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   // Fetch featured products from API
   useEffect(() => {
@@ -144,12 +165,12 @@ export default function FeaturedProducts() {
           ref={tabsContainerRef}
           className="flex md:justify-center gap-2 md:gap-3 mb-4 md:mb-5 overflow-x-auto pb-2 scrollbar-hide px-4 md:px-0"
         >
-          {CATEGORY_TABS.map((tab) => {
-            const isActive = activeTab === tab.id;
+          {categories.map((category) => {
+            const isActive = activeTab === category.id;
             return (
               <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
+                key={category.id}
+                onClick={() => setActiveTab(category.id)}
                 className={cn(
                   "px-4 py-1.5 md:px-5 md:py-2 rounded-full text-[11px] md:text-sm whitespace-nowrap transition-all duration-200",
                   isActive
@@ -162,7 +183,7 @@ export default function FeaturedProducts() {
                 }}
                 aria-pressed={isActive}
               >
-                {tab.label}
+                {category.name}
               </button>
             );
           })}
