@@ -32,7 +32,7 @@ export default function ProductGallery({ images }: ProductGalleryProps) {
           src={images[activeImage]}
           alt="Product image"
           fill
-          className="object-cover transition-transform duration-500 ease-out hover:scale-105"
+          className="object-contain transition-transform duration-500 ease-out hover:scale-105"
           priority
           sizes="(max-width: 1024px) 100vw, 60vw"
           onLoad={() => setImageLoaded(true)}
@@ -50,18 +50,17 @@ export default function ProductGallery({ images }: ProductGalleryProps) {
                 setActiveImage(index);
                 setImageLoaded(false);
               }}
-              className={`relative aspect-square w-full overflow-hidden rounded-none border-2 transition-all ${
-                activeImage === index
+              className={`relative aspect-square w-full overflow-hidden rounded-none border-2 transition-all ${activeImage === index
                   ? "border-neutral-900"
                   : "border-transparent hover:border-neutral-300"
-              }`}
+                }`}
               aria-label={`View image ${index + 1}`}
             >
               <Image
                 src={image}
                 alt={`Thumbnail ${index + 1}`}
                 fill
-                className="object-cover"
+                className="object-contain" // Changed from object-cover
                 sizes="(max-width: 768px) 25vw, 15vw"
                 unoptimized={isExternalImage(image)}
               />
@@ -72,4 +71,3 @@ export default function ProductGallery({ images }: ProductGalleryProps) {
     </div>
   );
 }
-

@@ -4,10 +4,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
+import { ArrowLeft, ArrowRight } from "lucide-react"; // Changed from Chevron to Arrow
 
 // ============================================
 // FEATURED PRODUCTS COMPONENT
-// Exact match to "Meet Your Match" UI design
 // ============================================
 
 interface Product {
@@ -28,17 +28,20 @@ interface Category {
   slug: string;
 }
 
-// Colors from design
-const PRIMARY_PURPLE = "#5B3A82";
-const PRODUCT_NAME_COLOR = "#5B3A82"; // Purple-ish color for product names
-const PRICE_COLOR = "#888888"; // Gray for prices
+// Colors from design image estimation
+const THEME_DARK_PURPLE = "#3D3B69"; // Dark blueish-purple for tabs and text
+const PRODUCT_NAME_COLOR = "#5B3A82";
+const PRICE_COLOR = "#888888";
 
 export default function FeaturedProducts() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState<Category[]>([]);
   const [activeTab, setActiveTab] = useState<string>("");
+  const [scrollProgress, setScrollProgress] = useState(0);
+
   const tabsContainerRef = useRef<HTMLDivElement>(null);
+  const carouselRef = useRef<HTMLDivElement>(null);
 
   // Fetch categories on mount
   useEffect(() => {
@@ -87,37 +90,57 @@ export default function FeaturedProducts() {
     fetchFeaturedProducts();
   }, []);
 
-  // Format price for display (matches reference: $XX.XX format)
+  // Update scroll progress
+  const handleScroll = () => {
+    if (carouselRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = carouselRef.current;
+      const progress = (scrollLeft / (scrollWidth - clientWidth)) * 100;
+      setScrollProgress(progress);
+    }
+  };
+
+  useEffect(() => {
+    const carousel = carouselRef.current;
+    if (carousel) {
+      carousel.addEventListener('scroll', handleScroll);
+      return () => carousel.removeEventListener('scroll', handleScroll);
+    }
+  }, [products]);
+
+  const scrollCarousel = (direction: 'left' | 'right') => {
+    if (carouselRef.current) {
+      const scrollAmount = carouselRef.current.clientWidth / 2;
+      carouselRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  // Format price for display
   const formatPrice = (price: number) => {
     return `$${price.toFixed(2)}`;
   };
 
-  // Display first 4 products
-  const displayedProducts = products.slice(0, 4);
+  // Display more products for carousel
+  const displayedProducts = products.slice(0, 10);
 
   // Loading skeleton
   if (loading) {
     return (
       <section className="w-full bg-white py-12 md:py-16 lg:py-20">
         <div className="max-w-6xl mx-auto px-4">
-          {/* Title Skeleton */}
           <div className="text-center mb-6">
             <div className="h-8 md:h-10 w-56 bg-neutral-100 animate-pulse rounded mx-auto" />
           </div>
-
-          {/* Tabs Skeleton */}
           <div className="flex justify-center gap-2 mb-4">
             {[1, 2, 3, 4].map((i) => (
               <div key={i} className="h-9 w-24 bg-neutral-100 animate-pulse rounded-full" />
             ))}
           </div>
-
-          {/* View All Skeleton */}
           <div className="flex justify-center mb-10">
             <div className="h-9 w-20 bg-neutral-100 animate-pulse rounded-full" />
           </div>
-
-          {/* Products Skeleton */}
           <div className="flex gap-4 overflow-x-auto pb-4">
             {[1, 2, 3, 4].map((i) => (
               <div key={i} className="flex-shrink-0 w-40 md:w-44">
@@ -137,20 +160,17 @@ export default function FeaturedProducts() {
   }
 
   return (
-    <section className="w-full bg-white py-8 md:py-16 lg:py-20">
-      <div className="max-w-screen-2xl mx-auto px-4 md:px-8">
+    <section className="w-full bg-white py-12 md:py-20">
+      <div className="max-w-screen-2xl mx-auto px-4 md:px-8 relative">
 
         {/* ============================================
             TITLE - "Meet Your Match"
-            Elegant serif, centered, matches reference
             ============================================ */}
         <h2
-          className="text-center text-3xl md:text-4xl mb-5 md:mb-8"
+          className="text-center text-4xl md:text-5xl mb-8 md:mb-12 font-sans tracking-tight"
           style={{
-            fontFamily: "'Playfair Display', 'Georgia', serif",
-            fontWeight: 400,
-            color: "#2D2D2D",
-            letterSpacing: "0.02em"
+            fontWeight: 300,
+            color: "#2C2C54",
           }}
         >
           Meet Your Match
@@ -158,12 +178,10 @@ export default function FeaturedProducts() {
 
         {/* ============================================
             CATEGORY TABS
-            Horizontal scrollable on mobile
-            Rounded pills matching reference exactly
             ============================================ */}
         <div
           ref={tabsContainerRef}
-          className="flex md:justify-center gap-2 md:gap-3 mb-4 md:mb-5 overflow-x-auto pb-2 scrollbar-hide px-4 md:px-0"
+          className="flex md:justify-center gap-3 md:gap-6 mb-8 md:mb-10 overflow-x-auto pb-2 scrollbar-hide px-4 md:px-0"
         >
           {categories.map((category) => {
             const isActive = activeTab === category.id;
@@ -172,13 +190,13 @@ export default function FeaturedProducts() {
                 key={category.id}
                 onClick={() => setActiveTab(category.id)}
                 className={cn(
-                  "px-4 py-1.5 md:px-5 md:py-2 rounded-full text-[11px] md:text-sm whitespace-nowrap transition-all duration-200",
+                  "px-6 py-2 md:px-7 md:py-2.5 rounded-full text-base md:text-lg whitespace-nowrap transition-all duration-300 font-sans",
                   isActive
-                    ? "text-white shadow-sm"
-                    : "bg-white text-neutral-500 border border-neutral-100 md:border-neutral-300 hover:border-neutral-400"
+                    ? "text-white shadow-lg shadow-indigo-100"
+                    : "bg-white text-neutral-300 border border-neutral-100 hover:border-neutral-200"
                 )}
                 style={{
-                  backgroundColor: isActive ? PRIMARY_PURPLE : undefined,
+                  backgroundColor: isActive ? THEME_DARK_PURPLE : undefined,
                   fontWeight: isActive ? 500 : 400,
                 }}
                 aria-pressed={isActive}
@@ -191,16 +209,15 @@ export default function FeaturedProducts() {
 
         {/* ============================================
             "VIEW ALL" BUTTON
-            Centered, rounded outline, purple border
             ============================================ */}
-        <div className="flex justify-center mb-6 md:mb-12">
+        <div className="flex justify-center mb-10 md:mb-16">
           <Link
             href="/category/all"
-            className="px-5 md:px-6 py-1.5 md:py-2 rounded-full text-[11px] md:text-sm border transition-all duration-200 hover:bg-purple-50"
+            className="px-8 md:px-10 py-2.5 md:py-3 rounded-full text-sm md:text-base font-sans border transition-all duration-300 hover:bg-neutral-50"
             style={{
-              borderColor: PRIMARY_PURPLE,
-              color: PRIMARY_PURPLE,
-              fontWeight: 500,
+              borderColor: THEME_DARK_PURPLE,
+              color: THEME_DARK_PURPLE,
+              fontWeight: 400,
             }}
           >
             View all
@@ -208,54 +225,91 @@ export default function FeaturedProducts() {
         </div>
 
         {/* ============================================
-            PRODUCTS
-            Mobile: 2-column grid
-            Desktop: 4-column grid (larger items)
+            MANUAL CAROUSEL
             ============================================ */}
-        <div className="">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-8 md:gap-8">
+        <div className="relative group px-0 md:px-12">
+
+          {/* Navigation Arrows (Left) */}
+          <button
+            onClick={() => scrollCarousel('left')}
+            className="flex absolute left-0 top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-white rounded-full shadow-lg items-center justify-center text-[#2C2C54] hover:text-purple-700 hover:scale-110 transition-all duration-300 border border-neutral-200"
+            aria-label="Scroll left"
+          >
+            <ArrowLeft className="w-5 h-5 stroke-[1.5]" />
+          </button>
+
+          {/* Carousel Container */}
+          <div
+            ref={carouselRef}
+            className="flex gap-6 md:gap-8 overflow-x-auto pb-12 snap-x snap-mandatory scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0"
+            style={{ scrollBehavior: 'smooth' }}
+          >
             {displayedProducts.map((product) => (
-              <Link
+              <div
                 key={product.id}
-                href={`/products/${product.slug}`}
-                className="w-full group"
+                className="flex-shrink-0 w-[45vw] sm:w-[30vw] md:w-[22vw] lg:w-[18vw] snap-center"
               >
-                {/* Product Image */}
-                <div className="relative w-full aspect-[3/4] md:aspect-square mb-2 md:mb-4 pt-2 md:pt-0">
-                  <Image
-                    src={product.image || "/placeholder.svg"}
-                    alt={product.name}
-                    fill
-                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 20vw"
-                    className="object-contain transition-transform duration-300 group-hover:scale-105"
-                    unoptimized={product.image?.startsWith('http')}
-                  />
-                </div>
-
-                {/* Product Name - Purple/blue color like reference */}
-                <p
-                  className="text-center text-[12px] md:text-base leading-tight mb-0.5 md:mb-1 line-clamp-2 px-1 mt-2 md:mt-0"
-                  style={{
-                    color: PRODUCT_NAME_COLOR,
-                    fontWeight: 400,
-                  }}
+                <Link
+                  href={`/products/${product.slug}`}
+                  className="block group/card h-full"
                 >
-                  {product.name}
-                </p>
+                  {/* Product Image - REMOVED CARD BACKGROUND */}
+                  <div className="relative w-full aspect-[3/4] md:aspect-square mb-3 pt-2 md:pt-0">
+                    <Image
+                      src={product.image || "/placeholder.svg"}
+                      alt={product.name}
+                      fill
+                      sizes="(max-width: 640px) 45vw, (max-width: 1024px) 30vw, 20vw"
+                      className="object-contain transition-transform duration-500 group-hover/card:scale-105"
+                      unoptimized={product.image?.startsWith('http')}
+                    />
+                  </div>
 
-                {/* Product Price - Gray, smaller */}
-                <p
-                  className="text-center text-[12px] md:text-sm"
-                  style={{ color: PRICE_COLOR, marginTop: '2px' }}
-                >
-                  {product.enableSale && product.salePrice
-                    ? formatPrice(product.salePrice)
-                    : formatPrice(product.price)
-                  }
-                </p>
-              </Link>
+                  {/* Product Info - RESTORED CLEAN LOOK */}
+                  <div className="text-center px-1">
+                    <h3
+                      className="text-[13px] md:text-base leading-tight mb-1 line-clamp-2 min-h-[2.5em] font-sans"
+                      style={{
+                        color: PRODUCT_NAME_COLOR,
+                        fontWeight: 400,
+                      }}
+                    >
+                      {product.name}
+                    </h3>
+
+                    {/* Price */}
+                    <p
+                      className="text-[13px] md:text-sm font-sans"
+                      style={{ color: PRICE_COLOR }}
+                    >
+                      {product.enableSale && product.salePrice
+                        ? formatPrice(product.salePrice)
+                        : formatPrice(product.price)
+                      }
+                    </p>
+                  </div>
+                </Link>
+              </div>
             ))}
           </div>
+
+          {/* Navigation Arrows (Right) */}
+          <button
+            onClick={() => scrollCarousel('right')}
+            className="flex absolute right-0 top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-white rounded-full shadow-lg items-center justify-center text-[#2C2C54] hover:text-purple-700 hover:scale-110 transition-all duration-300 border border-neutral-200"
+            aria-label="Scroll right"
+          >
+            <ArrowRight className="w-5 h-5 stroke-[1.5]" />
+          </button>
+
+        </div>
+
+        {/* Scroll Progress Indicator */}
+        <div className="w-full max-w-xs mx-auto mt-2 h-1 bg-neutral-100 rounded-full overflow-hidden">
+          <div
+            className="h-full bg-[#3D3B69] transition-all duration-300 ease-out rounded-full"
+            style={{ width: `${Math.max(15, Math.min(100, scrollProgress + 15))}%` }}
+          />
         </div>
 
       </div>

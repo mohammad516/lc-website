@@ -69,7 +69,7 @@ export default function CartPage() {
                         src={item.image}
                         alt={item.name}
                         fill
-                        className="object-cover"
+                        className="object-contain p-2" // Changed to object-contain with padding
                       />
                     </div>
 

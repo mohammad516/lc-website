@@ -36,6 +36,8 @@
   --font-mono: var(--font-inter);
   --font-dancing: var(--font-dancing-script), cursive;
   --font-lora: var(--font-lora), serif;
+  --font-namdhinggo: var(--font-namdhinggo), serif;
+  --font-montserrat: var(--font-montserrat), sans-serif;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -79,6 +81,15 @@ nav {
 .font-dancing-style {
   font-family: var(--font-dancing-script), "Dancing Script", cursive !important;
   font-weight: 600 !important;
+}
+
+/* Explicit class for Namdhinggo to verify/force application */
+.font-namdhinggo {
+  font-family: var(--font-namdhinggo), serif !important;
+}
+
+.font-montserrat {
+  font-family: var(--font-montserrat), sans-serif !important;
 }
 
 @keyframes fade-in-up {

@@ -9,6 +9,7 @@ import { Phone, Facebook, Instagram, PanelsTopLeft } from "lucide-react";
 import { SiTiktok, SiWhatsapp } from "react-icons/si";
 import { useCart } from "@/contexts/CartContext";
 import CartDrawer from "./CartDrawer";
+import AnnouncementBar from "./AnnouncementBar";
 
 interface Category {
   id: string;
@@ -109,6 +110,8 @@ export default function Navbar() {
     };
   }, [menuOpen]);
 
+
+
   // NOTE: We no longer load or show dynamic categories in the navbar.
 
   return (
@@ -126,6 +129,20 @@ export default function Navbar() {
           : 'bg-transparent'
         } ${isNavbarHidden ? 'pointer-events-none' : ''}`}
     >
+      <AnimatePresence>
+        {!scrolled && (
+          <motion.div
+            initial={{ height: 44, opacity: 1 }}
+            animate={{ height: 44, opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="overflow-hidden"
+          >
+            <AnnouncementBar scrolled={false} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <nav
         className={`mx-auto flex max-w-7xl items-center justify-between px-4 ${isContactPage || isCategoryPage || isProductPage || isCartPage || isCheckoutPage ? "py-2" : scrolled ? "py-2" : "py-2.5"
           } md:px-8 transition-[padding] duration-300 ${isContactPage || isCategoryPage || isProductPage || isCartPage || isCheckoutPage

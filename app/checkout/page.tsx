@@ -689,7 +689,7 @@ Payment Method: Cash on Delivery`;
                                 src={item.image}
                                 alt={item.name}
                                 fill
-                                className="object-cover"
+                                className="object-contain p-2" // Changed to object-contain with padding
                               />
                             </div>
                             <div className="flex-1 min-w-0 flex flex-col justify-center">
@@ -818,7 +818,7 @@ Payment Method: Cash on Delivery`;
                                   src={item.image}
                                   alt={item.name}
                                   fill
-                                  className="object-cover"
+                                  className="object-contain p-2" // Changed to object-contain with padding
                                 />
                               </div>
                               <div className="flex-1 min-w-0 flex flex-col justify-center">
@@ -914,4 +914,3 @@ Payment Method: Cash on Delivery`;
     </div>
   );
 }
-
