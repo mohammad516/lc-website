@@ -95,7 +95,7 @@ export default function Hero() {
           <h1
             className="text-[17px] xs:text-[19px] sm:text-3xl md:text-5xl lg:text-6xl font-montserrat tracking-tight leading-tight text-white whitespace-nowrap"
             style={{
-              fontWeight: 400,
+              fontWeight: 500,
               textShadow: "0 2px 10px rgba(0,0,0,0.3)"
             }}
           >
@@ -110,7 +110,7 @@ export default function Hero() {
         >
           <Link
             href="/category/all"
-            className="inline-flex items-center justify-center rounded-full px-8 py-3.5 sm:py-4 text-sm sm:text-base font-medium text-white transition-all duration-300 hover:scale-105 hover:bg-[#4a2e6b]"
+            className="inline-flex items-center justify-center rounded-full px-6 py-2.5 sm:px-8 sm:py-4 text-[13px] sm:text-base font-normal text-white transition-all duration-300 hover:scale-105 hover:bg-[#4a2e6b]"
             style={{
               backgroundColor: "#5B3A82",
               boxShadow: "0 4px 20px rgba(0,0,0,0.3)"

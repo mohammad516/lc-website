@@ -109,7 +109,7 @@ export default function CategoryPage({ params }: CategoryPageProps) {
   return (
     <div className="min-h-screen flex flex-col bg-white">
       <Navbar />
-      <main className="flex-1 pt-20 md:pt-28 lg:pt-32">
+      <main className="flex-1 pt-32 md:pt-40 lg:pt-48">
         {/* Header Section - With subtle separator line */}
         <section className="w-full bg-white pt-8 pb-6 border-b border-neutral-100">
           <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-8">
@@ -165,12 +165,13 @@ export default function CategoryPage({ params }: CategoryPageProps) {
                     className="group flex flex-col"
                   >
                     {/* Product Image */}
-                    <div className="relative aspect-square w-full overflow-hidden bg-neutral-50 rounded-lg">
+                    {/* Product Image */}
+                    <div className="relative aspect-square w-full mb-3 pt-4">
                       <Image
                         src={product.image || "/placeholder.svg"}
                         alt={product.name}
                         fill
-                        className="object-cover transition-transform duration-500 group-hover:scale-110"
+                        className="object-contain transition-transform duration-500 group-hover:scale-105"
                         unoptimized={product.image?.startsWith('http')}
                       />
 

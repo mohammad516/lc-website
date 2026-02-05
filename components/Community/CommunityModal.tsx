@@ -22,6 +22,12 @@ export default function CommunityModal({ post, isOpen, onClose, onPrevious, onNe
     const [isPlaying, setIsPlaying] = useState(true);
     const videoRef = useRef<HTMLVideoElement>(null);
     const { cartCount } = useCart();
+    const [isExpanded, setIsExpanded] = useState(false);
+
+    // Reset expanded state when post changes
+    useState(() => {
+        setIsExpanded(false);
+    });
 
     if (!isOpen || !post) return null;
 
@@ -42,6 +48,10 @@ export default function CommunityModal({ post, isOpen, onClose, onPrevious, onNe
             setIsPlaying(!isPlaying);
         }
     };
+
+    const MAX_LENGTH = 120;
+    const isLongText = post.caption.length > MAX_LENGTH;
+    const displayedCaption = isExpanded || !isLongText ? post.caption : post.caption.slice(0, MAX_LENGTH) + "...";
 
     return (
         <div
@@ -116,8 +126,16 @@ export default function CommunityModal({ post, isOpen, onClose, onPrevious, onNe
 
                 {/* Caption */}
                 <div className="p-4 bg-white">
-                    <p className="text-neutral-700 text-sm leading-relaxed line-clamp-4">
-                        {post.caption}
+                    <p className="text-neutral-700 text-sm leading-relaxed">
+                        {displayedCaption}
+                        {isLongText && !isExpanded && (
+                            <button
+                                onClick={() => setIsExpanded(true)}
+                                className="ml-1 text-neutral-500 font-medium hover:text-[#5B3A82]"
+                            >
+                                more
+                            </button>
+                        )}
                     </p>
                 </div>
 
