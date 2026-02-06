@@ -4,9 +4,11 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { useState, use, useEffect } from "react";
-import { Filter, Heart, ChevronDown } from "lucide-react";
+import { Filter, ChevronDown, ShoppingBag } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { useCart } from "@/contexts/CartContext";
+import AddToCartNotification from "@/components/AddToCartNotification";
 
 interface Product {
   id: string;
@@ -94,20 +96,27 @@ export default function CategoryPage({ params }: CategoryPageProps) {
     }
   }) : [];
 
-  const toggleWishlist = (productId: string) => {
-    setWishlist((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(productId)) {
-        newSet.delete(productId);
-      } else {
-        newSet.add(productId);
-      }
-      return newSet;
-    });
-  };
+  // Notification State
+  interface NotificationProduct {
+    name: string;
+    price: number;
+    image: string;
+    options?: Record<string, string>;
+  }
+  const [notificationProduct, setNotificationProduct] = useState<NotificationProduct | null>(null);
+  const [showNotification, setShowNotification] = useState(false);
+
+  const { addToCart } = useCart();
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
+      {/* Cart Notification */}
+      {showNotification && notificationProduct && (
+        <AddToCartNotification
+          product={notificationProduct}
+          onClose={() => setShowNotification(false)}
+        />
+      )}
       <Navbar />
       <main className="flex-1 pt-32 md:pt-40 lg:pt-48">
         {/* Header Section - With subtle separator line */}
@@ -159,21 +168,18 @@ export default function CategoryPage({ params }: CategoryPageProps) {
             ) : (
               <div className="grid grid-cols-2 gap-x-6 gap-y-12 md:grid-cols-3 lg:grid-cols-4">
                 {sortedProducts.map((product) => (
-                  <Link
-                    key={product.id}
-                    href={`/products/${product.slug}`}
-                    className="group flex flex-col"
-                  >
-                    {/* Product Image */}
+                  <div key={product.id} className="group flex flex-col">
                     {/* Product Image */}
                     <div className="relative aspect-square w-full mb-3 pt-4">
-                      <Image
-                        src={product.image || "/placeholder.svg"}
-                        alt={product.name}
-                        fill
-                        className="object-contain transition-transform duration-500 group-hover:scale-105"
-                        unoptimized={product.image?.startsWith('http')}
-                      />
+                      <Link href={`/products/${product.slug}`}>
+                        <Image
+                          src={product.image || "/placeholder.svg"}
+                          alt={product.name}
+                          fill
+                          className="object-contain transition-transform duration-500 group-hover:scale-105"
+                          unoptimized={product.image?.startsWith('http')}
+                        />
+                      </Link>
 
                       {/* Sale Badge */}
                       {product.enableSale && product.salePrice && (
@@ -181,32 +187,18 @@ export default function CategoryPage({ params }: CategoryPageProps) {
                           Sale
                         </div>
                       )}
-
-                      {/* Wishlist Icon - Matching design exactly */}
-                      <button
-                        onClick={(e) => {
-                          e.preventDefault();
-                          toggleWishlist(product.id);
-                        }}
-                        className="absolute right-3 top-3 z-10 rounded-full bg-white w-10 h-10 flex items-center justify-center shadow-md transition-all hover:scale-110"
-                        aria-label="Add to wishlist"
-                      >
-                        <Heart
-                          className={`h-5 w-5 transition-colors ${wishlist.has(product.id)
-                            ? "fill-[#5B3A82] text-[#5B3A82]"
-                            : "text-neutral-400"
-                            }`}
-                          strokeWidth={1.5}
-                        />
-                      </button>
                     </div>
 
                     {/* Product Info - Centered as per image */}
                     <div className="mt-5 flex flex-col items-center text-center gap-1 w-full px-2">
-                      <h3 className="text-sm sm:text-lg font-normal text-[#5B3A82] tracking-tight leading-tight truncate w-full">
-                        {product.name}
-                      </h3>
-                      <div className="flex flex-col items-center">
+                      <Link href={`/products/${product.slug}`}>
+                        <h3 className="text-sm sm:text-lg font-normal text-[#5B3A82] tracking-tight leading-tight truncate w-full">
+                          {product.name}
+                        </h3>
+                      </Link>
+
+                      {/* Price and Cart */}
+                      <div className="flex items-center justify-center gap-2 mt-1">
                         {product.enableSale && product.salePrice ? (
                           <div className="flex items-center gap-2">
                             <p className="text-sm text-neutral-400 line-through">
@@ -221,9 +213,42 @@ export default function CategoryPage({ params }: CategoryPageProps) {
                             ${product.price.toLocaleString()}
                           </p>
                         )}
+
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+
+                            // Determine effective price
+                            const effectivePrice = product.enableSale && product.salePrice
+                              ? product.salePrice
+                              : product.price;
+
+                            addToCart({
+                              id: product.id,
+                              name: product.name,
+                              price: effectivePrice,
+                              image: product.image
+                            });
+
+                            // Show Notification
+                            setNotificationProduct({
+                              name: product.name,
+                              price: effectivePrice,
+                              image: product.image
+                            });
+                            setShowNotification(false);
+                            setTimeout(() => setShowNotification(true), 10);
+                          }}
+                          className="text-[#5B3A82] hover:scale-110 transition-transform flex items-center justify-center"
+                          aria-label="Add to cart"
+                        >
+                          <ShoppingBag className="w-4 h-4 md:w-5 md:h-5" strokeWidth={1.5} />
+                        </button>
                       </div>
                     </div>
-                  </Link>
+                  </div>
                 ))}
               </div>
             )}

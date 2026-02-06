@@ -4,7 +4,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
-import { ArrowLeft, ArrowRight } from "lucide-react"; // Changed from Chevron to Arrow
+import { ArrowLeft, ArrowRight, ShoppingBag } from "lucide-react"; // Changed from Chevron to Arrow
+import { useCart } from "@/contexts/CartContext";
+import AddToCartNotification from "@/components/AddToCartNotification";
 
 // ============================================
 // FEATURED PRODUCTS COMPONENT
@@ -20,6 +22,7 @@ interface Product {
   image: string;
   slug: string;
   category?: string;
+  categories?: string[];
 }
 
 interface Category {
@@ -39,6 +42,18 @@ export default function FeaturedProducts() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [activeTab, setActiveTab] = useState<string>("");
   const [scrollProgress, setScrollProgress] = useState(0);
+
+  // Notification State
+  interface NotificationProduct {
+    name: string;
+    price: number;
+    image: string;
+    options?: Record<string, string>;
+  }
+  const [notificationProduct, setNotificationProduct] = useState<NotificationProduct | null>(null);
+  const [showNotification, setShowNotification] = useState(false);
+
+  const { addToCart } = useCart();
 
   const tabsContainerRef = useRef<HTMLDivElement>(null);
   const carouselRef = useRef<HTMLDivElement>(null);
@@ -122,8 +137,37 @@ export default function FeaturedProducts() {
     return `$${price.toFixed(2)}`;
   };
 
+
+  // Filter products based on active tab
+  const filteredProducts = products.filter((product) => {
+    // API already returns featured products only, but safe to filter again if needed
+    // const isFeatured = product.isFeatured; 
+
+    if (!activeTab) return true;
+
+    // Find the category object that matches the activeTab ID
+    const activeCategory = categories.find(c => c.id === activeTab);
+
+    if (!activeCategory) return true;
+
+    // Check if "All" category is selected (assuming 'all' slug or specific ID for All)
+    // Adjust logic if you have a specific "All" category
+
+    // If product has new categories array
+    if (product.categories && product.categories.length > 0) {
+      return product.categories.includes(activeCategory.name);
+    }
+
+    // Fallback for legacy products (should be migrated, but just in case)
+    return product.category === activeCategory.name;
+  });
+
   // Display more products for carousel
-  const displayedProducts = products.slice(0, 10);
+  const displayedProducts = filteredProducts.slice(0, 10);
+
+  // Determine View All Link
+  const activeCategory = categories.find(c => c.id === activeTab);
+  const viewAllLink = activeCategory ? `/category/${activeCategory.slug}` : '/category/all';
 
   // Loading skeleton
   if (loading) {
@@ -162,6 +206,14 @@ export default function FeaturedProducts() {
   return (
     <section className="w-full bg-white py-12 md:py-20">
       <div className="max-w-screen-2xl mx-auto px-4 md:px-8 relative">
+
+        {/* Cart Notification */}
+        {showNotification && notificationProduct && (
+          <AddToCartNotification
+            product={notificationProduct}
+            onClose={() => setShowNotification(false)}
+          />
+        )}
 
         {/* ============================================
             TITLE - "Meet Your Match"
@@ -212,7 +264,7 @@ export default function FeaturedProducts() {
             ============================================ */}
         <div className="flex justify-center mb-10 md:mb-16">
           <Link
-            href="/category/all"
+            href={viewAllLink}
             className="px-8 md:px-10 py-2.5 md:py-3 rounded-full text-sm md:text-base font-sans border transition-all duration-300 hover:bg-neutral-50"
             style={{
               borderColor: THEME_DARK_PURPLE,
@@ -249,52 +301,88 @@ export default function FeaturedProducts() {
                 key={product.id}
                 className="flex-shrink-0 w-[45vw] sm:w-[30vw] md:w-[22vw] lg:w-[18vw] snap-center"
               >
-                <Link
-                  href={`/products/${product.slug}`}
-                  className="block group/card h-full"
-                >
+                <div className="block group/card h-full">
                   {/* Product Image - REMOVED CARD BACKGROUND */}
                   <div className="relative w-full aspect-[3/4] md:aspect-square mb-3 pt-2 md:pt-0">
-                    <Image
-                      src={product.image || "/placeholder.svg"}
-                      alt={product.name}
-                      fill
-                      sizes="(max-width: 640px) 45vw, (max-width: 1024px) 30vw, 20vw"
-                      className="object-contain transition-transform duration-500 group-hover/card:scale-105"
-                      unoptimized={product.image?.startsWith('http')}
-                    />
+                    <Link href={`/products/${product.slug}`}>
+                      <Image
+                        src={product.image || "/placeholder.svg"}
+                        alt={product.name}
+                        fill
+                        sizes="(max-width: 640px) 45vw, (max-width: 1024px) 30vw, 20vw"
+                        className="object-contain transition-transform duration-500 group-hover/card:scale-105"
+                        unoptimized={product.image?.startsWith('http')}
+                      />
+                    </Link>
                   </div>
 
                   {/* Product Info - RESTORED CLEAN LOOK */}
                   <div className="text-center px-1">
-                    <h3
-                      className="text-[13px] md:text-base leading-tight mb-1 line-clamp-2 min-h-[2.5em] font-sans"
-                      style={{
-                        color: PRODUCT_NAME_COLOR,
-                        fontWeight: 400,
-                      }}
-                    >
-                      {product.name}
-                    </h3>
+                    <Link href={`/products/${product.slug}`}>
+                      <h3
+                        className="text-[13px] md:text-base leading-tight mb-1 line-clamp-2 min-h-[2.5em] font-sans"
+                        style={{
+                          color: PRODUCT_NAME_COLOR,
+                          fontWeight: 400,
+                        }}
+                      >
+                        {product.name}
+                      </h3>
+                    </Link>
 
-                    {/* Price */}
-                    <p
-                      className="text-[13px] md:text-sm font-sans"
-                      style={{ color: PRICE_COLOR }}
-                    >
-                      {product.enableSale && product.salePrice
-                        ? formatPrice(product.salePrice)
-                        : formatPrice(product.price)
-                      }
-                    </p>
+                    {/* Price and Cart */}
+                    <div className="flex items-center justify-center gap-2 mt-1">
+                      <p
+                        className="text-[13px] md:text-sm font-sans"
+                        style={{ color: PRICE_COLOR }}
+                      >
+                        {product.enableSale && product.salePrice
+                          ? formatPrice(product.salePrice)
+                          : formatPrice(product.price)
+                        }
+                      </p>
+
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+
+                          // Determine effective price
+                          const effectivePrice = product.enableSale && product.salePrice
+                            ? product.salePrice
+                            : product.price;
+
+                          addToCart({
+                            id: product.id,
+                            name: product.name,
+                            price: effectivePrice,
+                            image: product.image
+                          });
+
+                          // Show Notification
+                          setNotificationProduct({
+                            name: product.name,
+                            price: effectivePrice,
+                            image: product.image
+                          });
+                          setShowNotification(false); // Reset to ensure animation plays if already open
+                          setTimeout(() => setShowNotification(true), 10);
+                        }}
+                        className="text-[#5B3A82] hover:scale-110 transition-transform flex items-center justify-center"
+                        aria-label="Add to cart"
+                      >
+                        <ShoppingBag className="w-4 h-4 md:w-5 md:h-5" strokeWidth={1.5} />
+                      </button>
+                    </div>
                   </div>
-                </Link>
+                </div>
               </div>
             ))}
           </div>
 
           {/* Navigation Arrows (Right) */}
-          <button
+          < button
             onClick={() => scrollCarousel('right')}
             className="flex absolute right-0 top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-white rounded-full shadow-lg items-center justify-center text-[#2C2C54] hover:text-purple-700 hover:scale-110 transition-all duration-300 border border-neutral-200"
             aria-label="Scroll right"

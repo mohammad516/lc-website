@@ -27,17 +27,17 @@ export async function GET(request: Request) {
     // Transform products to match expected format
     const transformedProducts = products.map((product: any) => {
       // Use first image from images array, or fallback
-      const productImage = product.images && product.images.length > 0 
-        ? product.images[0] 
+      const productImage = product.images && product.images.length > 0
+        ? product.images[0]
         : '/placeholder.svg';
-      
+
       // Check if sale is still active (not expired)
       const saleActive = isSaleActive({
         enableSale: product.enableSale,
         salePrice: product.salePrice,
         saleEndDate: product.saleEndDate,
       });
-      
+
       // Get display price (salePrice if active, otherwise regular price)
       const displayPrice = getDisplayPrice({
         price: product.price,
@@ -58,6 +58,7 @@ export async function GET(request: Request) {
         slug: product.slug,
         description: product.description || '',
         stock: product.stock,
+        categories: product.categories || [],
       };
     });
 
@@ -65,9 +66,9 @@ export async function GET(request: Request) {
   } catch (error) {
     console.error('Error fetching products:', error);
     return NextResponse.json(
-      { 
-        error: 'Failed to fetch products', 
-        details: error instanceof Error ? error.message : 'Unknown error' 
+      {
+        error: 'Failed to fetch products',
+        details: error instanceof Error ? error.message : 'Unknown error'
       },
       { status: 500 }
     );

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import QuantitySelector from "./QuantitySelector";
-import AddToCartNotification from "./AddToCartNotification";
+import AddToCartNotification from "@/components/AddToCartNotification";
 import { useCart } from "@/contexts/CartContext";
 import { ChevronDown, Leaf, MessageCircleQuestion } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
