@@ -146,9 +146,9 @@ const Footer = () => (
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            <SocialIcon href="https://wa.me/96170717397?text=Hello" icon={FaWhatsapp} label="WhatsApp" delay={0} />
+            <SocialIcon href="https://wa.me/96103161091?text=Hello" icon={FaWhatsapp} label="WhatsApp" delay={0} />
             <SocialIcon href="https://www.facebook.com" icon={Facebook} label="Facebook" delay={0.1} />
-            <SocialIcon href="https://www.instagram.com/maze__lb/" icon={Instagram} label="Instagram" delay={0.2} />
+            <SocialIcon href="https://www.instagram.com/l_c_organic/" icon={Instagram} label="Instagram" delay={0.2} />
             <SocialIcon href="https://www.tiktok.com" icon={FaTiktok} label="TikTok" delay={0.3} />
           </motion.div>
 

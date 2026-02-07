@@ -245,7 +245,7 @@ export default function Navbar() {
             : "border-white/10"
             }`}>
             <a
-              href="tel:+96170717397"
+              href="tel:+96103161091"
               className={`inline-flex items-center justify-center p-2 transition-opacity duration-200 hover:opacity-70 ${isContactPage || isCategoryPage || isProductPage || isCartPage || isCheckoutPage || scrolled
                 ? "text-neutral-900"
                 : "text-white"
@@ -259,7 +259,7 @@ export default function Navbar() {
               }`}>
               <Facebook size={18} />
             </Link>
-            <Link aria-label="Instagram" href="https://www.instagram.com/maze__lb/" className={`inline-flex items-center justify-center p-2 transition-opacity duration-200 hover:opacity-70 ${isContactPage || isCategoryPage || isProductPage || isCartPage || isCheckoutPage || scrolled
+            <Link aria-label="Instagram" href="https://www.instagram.com/l_c_organic/" className={`inline-flex items-center justify-center p-2 transition-opacity duration-200 hover:opacity-70 ${isContactPage || isCategoryPage || isProductPage || isCartPage || isCheckoutPage || scrolled
               ? "text-neutral-900"
               : "text-white"
               }`}>
@@ -271,7 +271,7 @@ export default function Navbar() {
               }`} rel="noopener noreferrer">
               <SiTiktok className="h-[18px] w-[18px]" />
             </Link>
-            <Link aria-label="WhatsApp" href="https://wa.me/96170717397" target="_blank" className={`inline-flex items-center justify-center p-2 transition-opacity duration-200 hover:opacity-70 ${isContactPage || isCategoryPage || isProductPage || isCartPage || isCheckoutPage || scrolled
+            <Link aria-label="WhatsApp" href="https://wa.me/96103161091" target="_blank" className={`inline-flex items-center justify-center p-2 transition-opacity duration-200 hover:opacity-70 ${isContactPage || isCategoryPage || isProductPage || isCartPage || isCheckoutPage || scrolled
               ? "text-neutral-900"
               : "text-white"
               }`} rel="noopener noreferrer">
@@ -469,7 +469,7 @@ export default function Navbar() {
                       className="border-b border-neutral-200/50"
                     >
                       <a
-                        href="https://wa.me/96170717397"
+                        href="https://wa.me/96103161091"
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={() => setMenuOpen(false)}
@@ -493,13 +493,13 @@ export default function Navbar() {
                       className="border-b border-neutral-200/50"
                     >
                       <a
-                        href="tel:+96170717397"
+                        href="tel:+96103161091"
                         onClick={() => setMenuOpen(false)}
                         className="flex items-center gap-3 min-h-[48px] py-6 group"
                       >
                         <Phone className="h-4 w-4 text-neutral-400 opacity-40 group-hover:opacity-100 group-hover:text-[#5B3A82] transition-all duration-300 ease-[0.22,0.61,0.36,1]" />
                         <span className="text-[13px] font-light tracking-[0.25em] uppercase text-neutral-800 group-hover:text-[#5B3A82] transition-colors duration-300 ease-[0.22,0.61,0.36,1] relative inline-block after:absolute after:bottom-[-2px] after:left-0 after:h-[0.5px] after:w-0 after:bg-[#5B3A82] after:transition-all after:duration-300 after:ease-[0.22,0.61,0.36,1] group-hover:after:w-full">
-                          +961 70 717 397
+                          +961 03 161 091
                         </span>
                       </a>
                     </motion.li>
@@ -515,7 +515,7 @@ export default function Navbar() {
                       className="border-b border-neutral-200/50"
                     >
                       <Link
-                        href="https://www.instagram.com/maze__lb/"
+                        href="https://www.instagram.com/l_c_organic/"
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={() => setMenuOpen(false)}
