@@ -4,7 +4,7 @@ import { useState } from "react";
 import QuantitySelector from "./QuantitySelector";
 import AddToCartNotification from "@/components/AddToCartNotification";
 import { useCart } from "@/contexts/CartContext";
-import { ChevronDown, Leaf, MessageCircleQuestion } from "lucide-react";
+import { ChevronDown, Leaf, MessageCircleQuestion, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface ProductInfoProps {
@@ -17,6 +17,9 @@ interface ProductInfoProps {
     salePrice?: number;
     enableSale?: boolean;
     description: string;
+    benefits?: string[];
+    ingredients?: string;
+    howtouse?: string;
     image: string;
     stock: number;
     options?: {
@@ -204,27 +207,42 @@ export default function ProductInfo({ product }: ProductInfoProps) {
 
         {/* Accordions */}
         <div className="mb-8 border-b border-neutral-200">
-          <AccordionItem
-            title="Ingredients"
-            icon={Leaf}
-            isOpen={openSection === "ingredients"}
-            onToggle={() => toggleSection("ingredients")}
-          >
-            <p>
-              Water, Apple cider vinegar, Menthol, Citric acid, Glycerin, Sodium carbonate, Berry extract, lemon distillation, Tea Tree oil, Castor oil, Polysorbate 20, Limonene, Phenoxyethanol.
-            </p>
-          </AccordionItem>
+          {product.ingredients && (
+            <AccordionItem
+              title="Ingredients"
+              icon={Leaf}
+              isOpen={openSection === "ingredients"}
+              onToggle={() => toggleSection("ingredients")}
+            >
+              <p>{product.ingredients}</p>
+            </AccordionItem>
+          )}
 
-          <AccordionItem
-            title="How To Use"
-            icon={MessageCircleQuestion}
-            isOpen={openSection === "howtouse"}
-            onToggle={() => toggleSection("howtouse")}
-          >
-            <p>
-              Section your hair, apply Teatox drops directly onto your scalp, focusing on areas with oiliness or buildup. Massage gently in circular motion to boost absorption. Leave on for 10-15 minutes, then rinse thoroughly with lukewarm water. For best results, use 2-3 times a week.
-            </p>
-          </AccordionItem>
+          {product.benefits && product.benefits.length > 0 && (
+            <AccordionItem
+              title="Benefits"
+              icon={Sparkles}
+              isOpen={openSection === "benefits"}
+              onToggle={() => toggleSection("benefits")}
+            >
+              <ul className="list-disc pl-5 space-y-1">
+                {product.benefits.map((benefit, index) => (
+                  <li key={index}>{benefit}</li>
+                ))}
+              </ul>
+            </AccordionItem>
+          )}
+
+          {product.howtouse && (
+            <AccordionItem
+              title="How To Use"
+              icon={MessageCircleQuestion}
+              isOpen={openSection === "howtouse"}
+              onToggle={() => toggleSection("howtouse")}
+            >
+              <p>{product.howtouse}</p>
+            </AccordionItem>
+          )}
         </div>
 
         {/* Options (if any) */}

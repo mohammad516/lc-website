@@ -17,7 +17,7 @@ export async function generateMetadata({
   params,
 }: ProductPageProps): Promise<Metadata> {
   const { slug } = await params;
-  
+
   try {
     const db = await getDb();
     const collection = db.collection('Product');
@@ -29,8 +29,8 @@ export async function generateMetadata({
       };
     }
 
-    const firstImage = product.images && product.images.length > 0 
-      ? product.images[0] 
+    const firstImage = product.images && product.images.length > 0
+      ? product.images[0]
       : '/placeholder.svg';
 
     return {
@@ -52,7 +52,7 @@ export async function generateMetadata({
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const { slug } = await params;
-  
+
   try {
     const db = await getDb();
     const collection = db.collection('Product');
@@ -89,8 +89,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
       description: product.description || '',
       images: product.images || [],
       image: product.images && product.images.length > 0 ? product.images[0] : '/placeholder.svg',
-      options: product.length && product.length.length > 0 
-        ? { length: product.length } 
+      options: product.length && product.length.length > 0
+        ? { length: product.length }
         : undefined,
       stock: product.stock || 0,
     };
@@ -114,6 +114,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 salePrice: transformedProduct.salePrice,
                 enableSale: transformedProduct.enableSale,
                 description: transformedProduct.description,
+                benefits: product.benefits || [],
+                ingredients: product.ingredients || undefined,
+                howtouse: product.howtouse || undefined,
                 image: transformedProduct.image,
                 options: transformedProduct.options,
                 stock: transformedProduct.stock,

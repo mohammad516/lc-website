@@ -5,7 +5,14 @@ import "./globals.css";
 import { CartProvider } from "@/contexts/CartContext";
 import LoadingScreen from "@/components/LoadingScreen";
 
-import { Inter, Playfair_Display, Dancing_Script, Lora, Namdhinggo, Montserrat } from "next/font/google";
+import {
+  Inter,
+  Playfair_Display,
+  Dancing_Script,
+  Lora,
+  Namdhinggo,
+  Montserrat,
+} from "next/font/google";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -48,8 +55,21 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
-  title: "LC Organic Skin Care",
-  description: "LC Organic Skin Care",
+  title: "L C Organic | Organic Skincare in Lebanon",
+  description:
+    "Lebanon-based organic skincare brand focused on clean formulas that support healthy, balanced skin.",
+  keywords: [
+    "organic skincare Lebanon",
+    "natural skincare Lebanon",
+    "clean skincare Lebanon",
+    "L C Organic",
+  ],
+  openGraph: {
+    title: "L C Organic | Organic Skincare in Lebanon",
+    description:
+      "Clean, effective organic skincare designed to support skin balance and long-lasting results.",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
@@ -67,9 +87,7 @@ export default function RootLayout({
 
         <LoadingScreen />
 
-        <CartProvider>
-          {children}
-        </CartProvider>
+        <CartProvider>{children}</CartProvider>
       </body>
     </html>
   );
