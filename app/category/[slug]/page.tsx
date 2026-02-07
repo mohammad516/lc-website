@@ -157,6 +157,13 @@ export default function CategoryPage({ params }: CategoryPageProps) {
                     </select>
                   </div>
                 </div>
+
+                <Link
+                  href="/category/all"
+                  className="px-5 py-2 rounded-full border border-[#5B3A82] text-[12px] sm:text-sm font-medium hover:bg-[#5B3A82] hover:text-white transition-all whitespace-nowrap"
+                >
+                  View all
+                </Link>
               </div>
             </div>
 

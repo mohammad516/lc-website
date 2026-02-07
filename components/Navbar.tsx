@@ -362,9 +362,9 @@ export default function Navbar() {
                     <Image
                       src="/logo.png"
                       alt="LC Organic Logo"
-                      width={80}
-                      height={80}
-                      className="h-8 w-8 md:h-10 md:w-10 object-contain"
+                      width={150}
+                      height={150}
+                      className="h-20 w-20 md:h-24 md:w-24 object-contain"
                     />
                   </Link>
 

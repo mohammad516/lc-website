@@ -60,7 +60,7 @@ export default function CommunityModal({ post, isOpen, onClose, onPrevious, onNe
         >
             {/* Modal Content */}
             <div
-                className="relative z-10 w-full h-full md:h-auto md:max-w-md bg-white md:rounded-2xl overflow-hidden shadow-2xl flex flex-col"
+                className="relative z-10 w-full h-full md:h-auto md:max-w-md bg-white md:rounded-2xl overflow-y-auto shadow-2xl flex flex-col"
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Header */}
