@@ -392,7 +392,7 @@ export default function Navbar() {
                   initial={{ opacity: 0, x: -30 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.5, delay: 0.1, ease: [0.22, 0.61, 0.36, 1] }}
-                  className="flex-1 px-4 md:px-6 py-4 md:py-8"
+                  className="flex-1 px-4 md:px-6 py-4 md:py-8 pb-24"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <ul className="space-y-0">
